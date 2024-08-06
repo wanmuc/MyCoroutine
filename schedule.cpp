@@ -34,7 +34,7 @@ void Schedule::Run() {
 
 void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   routine->entry = entry;
-  routine->state = kReady;
+  routine->state = State::kReady;
   routine->stack = new uint8_t[stack_size_];
   getcontext(&(routine->ctx));
   routine->ctx.uc_stack.ss_flags = 0;
@@ -45,7 +45,7 @@ void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   // 这里没有直接使用entry，而是多包了一层CoroutineRun函数的调用，
   // 是为了在CoroutineRun中entry函数执行完之后，从协程的状态更新kIdle，并更新当前处于运行中的从协程id为无效id，
   // 这样这些逻辑就可以对上层调用透明。
-  makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 1, this);
+  makecontext(&(routine->ctx), (void (*)(void))(Schedule::CoroutineRun), 1, this);
 }
 
 /*

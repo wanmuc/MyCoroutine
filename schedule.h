@@ -19,7 +19,7 @@ class Schedule {
   int32_t CoroutineCreate(Function&& func, Args&&... args) {
     int32_t cid = 0;
     for (cid = 0; cid < total_count_; cid++) {
-      if (coroutines_[cid]->state_ == State::kIdle) {
+      if (coroutines_[cid]->state == State::kIdle) {
         break;
       }
     }
