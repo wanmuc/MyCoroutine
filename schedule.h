@@ -26,7 +26,7 @@ class Schedule {
     if (cid >= total_count_) {
       return kInvalidCid;
     }
-    Coroutine* routine = coroutines[cid];
+    Coroutine* routine = coroutines_[cid];
     std::function<void()> entry = std::bind(std::forward<Function>(func), std::forward<Args>(args)...);
     CoroutineInit(routine, entry);
     return cid;
@@ -36,7 +36,7 @@ class Schedule {
 
  private:
   void CoroutineInit(Coroutine* routine, std::function<void()> entry);
-  static void CoroutineRun(Schedule* schedule);
+  void CoroutineRun();
 
  private:
   bool is_master_{true};                      // 是否主协程

@@ -20,6 +20,12 @@ enum class State {
 };
 
 class Coroutine {
+public:
+  void Entry() {
+    entry_();
+    state_ = State::kIdle;
+  }
+
 private:
   State state_{State::kIdle};            // 从协程当前的状态
   std::function<void()> entry_{nullptr}; // 从协程入口函数
