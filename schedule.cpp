@@ -3,14 +3,14 @@
 
 namespace MyCoroutine {
 
-void Schedule::CoroutineRun() {
-  is_master_ = false;
-  suspend_and_run_count_++;
-  Coroutine* routine = coroutines_[slave_cid_];
+static void Schedule::CoroutineRun(Schedule * schedule) {
+  schedule->is_master_ = false;
+  schedule->suspend_and_run_count_++;
+  Coroutine* routine = schedule->coroutines_[schedule->slave_cid_];
   routine->entry();
   routine->state = State::kIdle;
-  slave_cid_ = kInvalidCid;  // slave_cid_更新为无效的从协程id
-  suspend_and_run_count_--;
+  schedule->slave_cid_ = kInvalidCid;  // slave_cid_更新为无效的从协程id
+  schedule->suspend_and_run_count_--;
   // 函数执行完，调用栈会回到主协程，执行routine->ctx_.uc_link指向的上下文的下一条指令
 }
 
@@ -45,7 +45,7 @@ void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   // 这里没有直接使用entry，而是多包了一层CoroutineRun函数的调用，
   // 是为了在CoroutineRun中entry函数执行完之后，从协程的状态更新kIdle，并更新当前处于运行中的从协程id为无效id，
   // 这样这些逻辑就可以对上层调用透明。
-  makecontext(&(routine->ctx), (void (*)(void))(Schedule::CoroutineRun), 1, this);
+  makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 1, this);
 }
 
 /*
