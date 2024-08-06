@@ -1,9 +1,10 @@
 #include "schedule.h"
+
 #include <assert.h>
 
 namespace MyCoroutine {
 
-void Schedule::CoroutineRun(Schedule * schedule) {
+void Schedule::CoroutineRun(Schedule* schedule) {
   schedule->is_master_ = false;
   schedule->suspend_and_run_count_++;
   Coroutine* routine = schedule->coroutines_[schedule->slave_cid_];

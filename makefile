@@ -1,8 +1,6 @@
-#======================== 编译目标 开始 ========================#
-TARGET = MyCoroutine
-#======================== 编译目标 结束 ========================#
+# 取当前路径名列中最后一个目录名，CURDIR是make的内置变量，自动会被设置为当前目录
+TARGET = $(shell basename $(CURDIR))
 
-#======================= 自定义设置部分 开始 ====================#
 # c编译选项
 CFLAGS = -g -O2 -Wall -Werror -pipe -m64
 # c++编译选项
@@ -15,29 +13,13 @@ INCFLAGS =
 SRCDIRS = .
 # 单独的源文件
 ALONE_SOURCES =
-#======================= 自定义设置部分 结束 =====================#
 
-#======================= 固定设置部分 开始 =======================#
 # c编译器
 CC = gcc
 # c++编译器
 CXX = g++
 # 源文件类型扩展：c为c源文件，cpp为c++源文件
-SRCEXTS = .c .cpp 
-
-# 如果TARGET为空，则取当前目录的basename作为目标名词
-ifeq ($(TARGET),)
-	# 取当前路径名列中最后一个名词，CURDIR是make的内置变量，自动会被设置为当前目录
-	TARGET = $(shell basename $(CURDIR))
-	ifeq ($(TARGET),)
-		TARGET = a.out
-	endif
-endif
-
-# 如果源文件目录为空，则默认当前目录为源文件目录
-ifeq ($(SRCDIRS),)
-	SRCDIRS = .
-endif
+SRCEXTS = .c .cpp
 
 # foreach函数用于遍历源文件目录，针对每个目录再调用addprefix函数，生成各种指定源文件后缀类型的通用匹配模式（类似正则表达式）
 # 使用wildcard函数对每个目录下文件，进行通配符扩展，最后得到所有的TARGET依赖的源文件列表，保存到SOURCES中
@@ -106,5 +88,3 @@ debug:
 	@echo 'COMPILE.cpp  :' 	$(COMPILE.cpp)
 	@echo 'LINK.c       :' 	$(LINK.c)
 	@echo 'LINK.cpp     :' 	$(LINK.cpp)
-
-#======================= 固定设置部分 结束 =======================#
