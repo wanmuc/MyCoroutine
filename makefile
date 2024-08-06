@@ -1,5 +1,5 @@
 #======================== 编译目标 开始 ========================#
-TARGET = demo
+TARGET = MyCoroutine
 #======================== 编译目标 结束 ========================#
 
 #======================= 自定义设置部分 开始 ====================#
@@ -22,8 +22,8 @@ ALONE_SOURCES =
 CC = gcc
 # c++编译器
 CXX = g++
-# 源文件类型扩展：c为c源文件，其他的为c++源文件
-SRCEXTS = .cpp 
+# 源文件类型扩展：c为c源文件，cpp为c++源文件
+SRCEXTS = .c .cpp 
 
 # 如果TARGET为空，则取当前目录的basename作为目标名词
 ifeq ($(TARGET),)
@@ -100,12 +100,11 @@ debug:
 	@echo 'TARGET       :' 	$(TARGET)
 	@echo 'SRCDIRS      :'	$(SRCDIRS)
 	@echo 'SOURCES      :'	$(SOURCES)
-	@echo 'HEADERS      :'	$(HEADERS)
 	@echo 'SRC_CXX      :'	$(SRC_CXX)
 	@echo 'OBJS         :' 	$(OBJS)
 	@echo 'COMPILE.c    :' 	$(COMPILE.c)
-	@echo 'COMPILE.cxx  :' 	$(COMPILE.cxx)
+	@echo 'COMPILE.cpp  :' 	$(COMPILE.cpp)
 	@echo 'LINK.c       :' 	$(LINK.c)
-	@echo 'LINK.cxx     :' 	$(LINK.cxx)
+	@echo 'LINK.cpp     :' 	$(LINK.cpp)
 
 #======================= 固定设置部分 结束 =======================#
