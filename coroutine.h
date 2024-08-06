@@ -19,18 +19,11 @@ enum class State {
   kSuspend = 4, // 挂起
 };
 
-class Coroutine {
-public:
-  void Entry() {
-    entry_();
-    state_ = State::kIdle;
-  }
-
-private:
-  State state_{State::kIdle};            // 从协程当前的状态
-  std::function<void()> entry_{nullptr}; // 从协程入口函数
-  ucontext_t ctx_;                       // 从协程执行上下文
-  uint8_t *stack_{nullptr}; // 每个协程独占的协程栈，动态分配
-};
+typedef struct Coroutine {
+  State state{State::kIdle};            // 从协程当前的状态
+  std::function<void()> entry{nullptr}; // 从协程入口函数
+  ucontext_t ctx;                       // 从协程执行上下文
+  uint8_t *stack{nullptr}; // 每个协程独占的协程栈，动态分配
+} Coroutine;
 
 }; // namespace MyCoroutine

@@ -1,4 +1,5 @@
 #include "schedule.h"
+#include <assert.h>
 
 namespace MyCoroutine {
 
@@ -6,7 +7,8 @@ void Schedule::CoroutineRun() {
   is_master_ = false;
   suspend_and_run_count_++;
   Coroutine* routine = coroutines_[slave_cid_];
-  routine->Entry();
+  routine->entry();
+  routine->state = State::kIdle;
   slave_cid_ = kInvalidCid;  // slave_cid_更新为无效的从协程id
   suspend_and_run_count_--;
   // 函数执行完，调用栈会回到主协程，执行routine->ctx_.uc_link指向的上下文的下一条指令
@@ -21,9 +23,6 @@ Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
 
 Schedule::~Schedule() {
   for (int32_t i = 0; i < total_count_; i++) {
-    if (coroutines_[i]->stack_) {
-      delete[] coroutines_[i]->stack_;
-    }
     delete coroutines_[i];
   }
 }
@@ -34,19 +33,19 @@ void Schedule::Run() {
 }
 
 void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
-  routine->entry_ = entry;
-  routine->state_ = kReady;
-  routine->stack_ = new uint8_t[stack_size_];
-  getcontext(&(routine->ctx_));
-  routine->ctx_.uc_stack.ss_flags = 0;
-  routine->ctx_.uc_stack.ss_sp = routine->stack;
-  routine->ctx_.uc_stack.ss_size = schedule.stackSize;
-  routine->ctx_.uc_link = &(main_);
-  // 设置routine->ctx_上下文要执行的函数和对应的参数，
+  routine->entry = entry;
+  routine->state = kReady;
+  routine->stack = new uint8_t[stack_size_];
+  getcontext(&(routine->ctx));
+  routine->ctx.uc_stack.ss_flags = 0;
+  routine->ctx.uc_stack.ss_sp = routine->stack;
+  routine->ctx.uc_stack.ss_size = stack_size_;
+  routine->ctx.uc_link = &(main_);
+  // 设置routine->ctx上下文要执行的函数和对应的参数，
   // 这里没有直接使用entry，而是多包了一层CoroutineRun函数的调用，
   // 是为了在CoroutineRun中entry函数执行完之后，从协程的状态更新kIdle，并更新当前处于运行中的从协程id为无效id，
   // 这样这些逻辑就可以对上层调用透明。
-  makecontext(&(routine->ctx_), (void (*)(void))(CoroutineRun), 1, this);
+  makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 1, this);
 }
 
 /*
