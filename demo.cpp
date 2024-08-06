@@ -21,8 +21,8 @@ void func2(int b) {
 }
 
 int main() {
-  schedule.CoroutineCreate(fun1, 10);
-  schedule.CoroutineCreate(fun2, 20);
+  schedule.CoroutineCreate(func1, 10);
+  schedule.CoroutineCreate(func2, 20);
   schedule.Run();
   return 0;
 }
