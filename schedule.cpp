@@ -24,7 +24,7 @@ Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
 Schedule::~Schedule() {
   for (int32_t i = 0; i < total_count_; i++) {
     if (coroutines_[i]->stack) {
-      delete coroutines_[i]->stack;
+      delete[] coroutines_[i]->stack;
     }
     delete coroutines_[i];
   }
@@ -55,6 +55,7 @@ void Schedule::CoroutineYield() {
   assert(slave_cid_ >= 0 && slave_cid_ < total_count_);
   Coroutine* routine = coroutines_[slave_cid_];
   routine->state = State::kSuspend;
+  slave_cid_ = kInvalidCid;
   swapcontext(&routine->ctx, &main_);
   is_master_ = false;
 }

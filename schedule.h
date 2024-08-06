@@ -11,7 +11,7 @@ constexpr int32_t kMaxCoroutineSize = 10240;  // 允许创建的最大协程池�
 // 协程调度器
 class Schedule {
  public:
-  explicit Schedule(int32_t total_count);
+  Schedule(int32_t total_count);
   ~Schedule();
   void Run();
 
