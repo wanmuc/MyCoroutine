@@ -47,10 +47,10 @@ all: $(TARGET)
 objs: $(OBJS)
 
 # 下面的是生成目标文件的通用规则
-%.o:%.c %.h
+%.o:%.c
 	$(COMPILE.c) $< -o $@
 
-%.o:%.cpp %.h
+%.o:%.cpp
 	$(COMPILE.cpp) $< -o $@
 
 # 最终目标文件的依赖规则
