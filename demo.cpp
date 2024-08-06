@@ -4,7 +4,7 @@
 
 using namespace std;
 
-MyCoroutine::Schedule schedule;
+MyCoroutine::Schedule schedule(1024);
 
 void func1(int a) {
   cout << "func1 begin" << endl;
