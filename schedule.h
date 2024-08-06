@@ -43,7 +43,7 @@ class Schedule {
   ucontext_t main_;                           // 保存主协程的上下文
   int32_t slave_cid_{kInvalidCid};            // 运行中的从协程的 id（运行从协程时才有效）
   int32_t total_count_{0};                    // 从协程总数
-  int32_t suspend_and_run_count_{0};          // 运行中和挂起的从协程数
+  int32_t not_idle_count_{0};                 // 运行中和挂起的从协程数
   int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
 };
