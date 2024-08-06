@@ -3,7 +3,7 @@
 
 namespace MyCoroutine {
 
-static void Schedule::CoroutineRun(Schedule * schedule) {
+void Schedule::CoroutineRun(Schedule * schedule) {
   schedule->is_master_ = false;
   schedule->suspend_and_run_count_++;
   Coroutine* routine = schedule->coroutines_[schedule->slave_cid_];
@@ -23,6 +23,9 @@ Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
 
 Schedule::~Schedule() {
   for (int32_t i = 0; i < total_count_; i++) {
+    if (coroutines_[i]->stack) {
+      delete coroutines_[i]->stack;
+    }
     delete coroutines_[i];
   }
 }
