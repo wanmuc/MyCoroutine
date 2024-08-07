@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coroutine.h"
+#include "common.h"
 
 namespace MyCoroutine {
 constexpr int32_t kStackSize = 64 * 1024;     // 协程栈默认大小为 64K
@@ -33,6 +33,11 @@ class Schedule {
   void CoroutineYield();
   // 主协程唤醒指定的从协程
   void CoroutineResume(int32_t cid);
+
+  // 设置协程本地变量
+  void CoroutineLocalSet(void *key, const LocalData &local_data);
+  // 获取协程本地变量
+  bool CoroutineLocalGet(void *key, LocalData &local_data);
 
  private:
   // 从协程的执行入口

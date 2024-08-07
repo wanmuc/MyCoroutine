@@ -1,6 +1,6 @@
-#include "schedule.h"
-
 #include <assert.h>
+
+#include "schedule.h"
 
 namespace MyCoroutine {
 
@@ -29,6 +29,9 @@ Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
 Schedule::~Schedule() {
   for (int32_t i = 0; i < total_count_; i++) {
     if (coroutines_[i]->stack) delete[] coroutines_[i]->stack;
+    for (const auto& item : coroutines_[i]->local) {
+      item.second.free(item.second.data);  // 释放协程本地变量的内存
+    }
     delete coroutines_[i];
   }
 }
@@ -88,5 +91,22 @@ void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   // 是为了在CoroutineRun中entry函数执行完之后，从协程的状态更新kIdle，并更新当前处于运行中的从协程id为无效id，
   // 这样这些逻辑就可以对上层调用透明。
   makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 2, this, routine);
+}
+
+void Schedule::CoroutineLocalSet(void* key, const LocalData& local_data) {
+  assert(not is_master_);
+  auto iter = coroutines_[slave_cid_]->local.find(key);
+  if (iter != coroutines_[slave_cid_]->local.end()) {
+    iter->second.free(iter->second.data);  // 之前有值，则要先释放空间
+  }
+  coroutines_[slave_cid_]->local[key] = local_data;
+}
+
+bool Schedule::CoroutineLocalGet(void* key, LocalData& local_data) {
+  assert(not is_master_);
+  auto iter = coroutines_[slave_cid_]->local.find(key);
+  assert(iter != coroutines_[slave_cid_]->local.end());
+  local_data = iter->second;
+  return true;
 }
 }  // namespace MyCoroutine
