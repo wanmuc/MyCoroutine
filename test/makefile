@@ -7,9 +7,9 @@ CXXFLAGS = -g -O2 -Wall -Werror -pipe -m64 -std=c++11
 # 连接选项
 LDFLAGS =
 # 头文件目录
-INCFLAGS = -I../
+INCFLAGS = -I..
 # 源文件目录
-SRCDIRS = . ../
+SRCDIRS = . ..
 # 单独的源文件
 ALONE_SOURCES =
 
