@@ -92,21 +92,4 @@ void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   // 这样这些逻辑就可以对上层调用透明。
   makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 2, this, routine);
 }
-
-void Schedule::CoroutineLocalSet(void* key, const LocalData& local_data) {
-  assert(not is_master_);
-  auto iter = coroutines_[slave_cid_]->local.find(key);
-  if (iter != coroutines_[slave_cid_]->local.end()) {
-    iter->second.free(iter->second.data);  // 之前有值，则要先释放空间
-  }
-  coroutines_[slave_cid_]->local[key] = local_data;
-}
-
-bool Schedule::CoroutineLocalGet(void* key, LocalData& local_data) {
-  assert(not is_master_);
-  auto iter = coroutines_[slave_cid_]->local.find(key);
-  assert(iter != coroutines_[slave_cid_]->local.end());
-  local_data = iter->second;
-  return true;
-}
 }  // namespace MyCoroutine
