@@ -24,6 +24,7 @@ class TestCase {
   void SetResult(bool ret) { result = ret; }
   std::string CaseName() { return caseName; }
   TestCase(std::string name) : caseName(name) { result = true; }
+  virtual ~TestCase() = default;
 
  private:
   bool result;
