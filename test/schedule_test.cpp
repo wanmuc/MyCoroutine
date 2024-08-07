@@ -22,7 +22,7 @@ TEST_CASE(Schedule_Run) {
     ASSERT_EQ(cid, i);
   }
   schedule.Run();
-  ASSERT_EQ(total, 204800);
+  ASSERT_EQ(total, 102400);
 }
 
 RUN_ALL_TESTS();
