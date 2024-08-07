@@ -22,7 +22,7 @@ void func2(int b) {
 
 void func3(int c) {
   cout << "func3 begin" << endl;
-  cout << "func3.c=" << b << endl;
+  cout << "func3.c=" << c << endl;
   schedule.CoroutineYield();
   cout << "func3 end" << endl;
 }
