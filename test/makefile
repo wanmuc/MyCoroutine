@@ -9,9 +9,9 @@ LDFLAGS =
 # 头文件目录
 INCFLAGS = -I..
 # 源文件目录
-SRCDIRS = . ..
+SRCDIRS = .
 # 单独的源文件
-ALONE_SOURCES =
+ALONE_SOURCES = ../schedule.cpp
 
 # c编译器
 CC = gcc
