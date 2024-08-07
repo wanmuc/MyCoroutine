@@ -55,7 +55,7 @@ void Schedule::CoroutineYield() {
 }
 
 void Schedule::CoroutineResume(int32_t cid) {
-  assert(not is_master_);
+  assert(is_master_);
   assert(cid >= 0 && cid < total_count_);
   Coroutine *routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady ||
