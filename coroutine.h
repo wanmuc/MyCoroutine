@@ -4,8 +4,10 @@
 #include <ucontext.h>
 
 namespace MyCoroutine {
+
+constexpr int32_t kInvalidCid = -1; // 无效的从协程id
 /**
- * 协程的状态，协程的状态转移如下：
+ * 从协程的状态机转移如下所示：
  *  kIdle->kReady
  *  kReady->kRun
  *  kRun->kSuspend
@@ -20,6 +22,7 @@ enum class State {
 };
 
 typedef struct Coroutine {
+  int32_t cid{kInvalidCid};             // 从协程id
   State state{State::kIdle};            // 从协程当前的状态
   std::function<void()> entry{nullptr}; // 从协程入口函数
   ucontext_t ctx;                       // 从协程执行上下文
