@@ -1,5 +1,4 @@
-# 取当前路径名列中最后一个目录名，CURDIR是make的内置变量，自动会被设置为当前目录
-TARGET = $(shell basename $(CURDIR))
+TARGET = MyCoroutineTest
 
 # c编译选项
 CFLAGS = -g -O2 -Wall -Werror -pipe -m64
