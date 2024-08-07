@@ -20,8 +20,8 @@ TEST_CASE(Schedule_Run) {
     int32_t cid = schedule.CoroutineCreate(Sum, std::ref(schedule), std::ref(total));
     ASSERT_EQ(cid, i);
   }
-  ASSERT_EQ(total, 20480);
   schedule.Run();
+  ASSERT_EQ(total, 20480);
 }
 
 RUN_ALL_TESTS();
