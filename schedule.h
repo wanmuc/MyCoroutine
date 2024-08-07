@@ -34,7 +34,7 @@ class Schedule {
   void CoroutineResume(int32_t cid);
 
  private:
-  static void CoroutineRun(Schedule *schedule);
+  static void CoroutineRun(Schedule *schedule, Coroutine* routine);
   void CoroutineInit(Coroutine *routine, std::function<void()> entry);
 
  private:

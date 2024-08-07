@@ -4,10 +4,9 @@
 
 namespace MyCoroutine {
 
-void Schedule::CoroutineRun(Schedule* schedule, int32_t cid) {
+void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
   schedule->is_master_ = false;
-  schedule->slave_cid_ = cid;
-  Coroutine* routine = schedule->coroutines_[cid];
+  schedule->slave_cid_ = routine->cid;
   routine->entry();
   assert(routine->state == State::kRun);
   routine->state = State::kIdle;
@@ -59,7 +58,8 @@ void Schedule::CoroutineResume(int32_t cid) {
   assert(not is_master_);
   assert(cid >= 0 && cid < total_count_);
   Coroutine *routine = coroutines_[cid];
-  assert(coroutines_[i]->state == State::kReady || coroutines_[i]->state == State::kSuspend);
+  assert(coroutines_[cid]->state == State::kReady ||
+         coroutines_[cid]->state == State::kSuspend);
   routine->state = State::kRun;
   is_master_ = false;
   slave_cid_ = cid;
@@ -84,6 +84,6 @@ void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   // 这里没有直接使用entry，而是多包了一层CoroutineRun函数的调用，
   // 是为了在CoroutineRun中entry函数执行完之后，从协程的状态更新kIdle，并更新当前处于运行中的从协程id为无效id，
   // 这样这些逻辑就可以对上层调用透明。
-  makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 1, this);
+  makecontext(&(routine->ctx), (void (*)(void))(CoroutineRun), 2, this, routine);
 }
 }  // namespace MyCoroutine
