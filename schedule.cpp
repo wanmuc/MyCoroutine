@@ -5,7 +5,7 @@
 namespace MyCoroutine {
 
 void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
-  assert(schedule->is_master_);
+  assert(not schedule->is_master_);
   schedule->is_master_ = false;
   schedule->slave_cid_ = routine->cid;
   routine->entry();  // 执行从协程的入口函数
