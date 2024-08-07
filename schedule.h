@@ -50,3 +50,25 @@ class Schedule {
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
 };
 }  // namespace MyCoroutine
+
+/*
+// 恢复从协程batch中协程的调用，只能在主协程中调用
+int CoroutineResumeInBatch(Schedule& schedule, int id);
+// 恢复被插入batch卡点的从协程的调用，只能在主协程中调用
+int CoroutineResumeBatchFinish(Schedule& schedule);
+// 判断当前从协程是否在batch中
+bool CoroutineIsInBatch(Schedule& schedule);
+// 设置协程本地变量
+void CoroutineLocalSet(Schedule& schedule, void* key, LocalData localData);
+// 获取协程本地变量
+bool CoroutineLocalGet(Schedule& schedule, void* key, LocalData& localData);
+// 协程栈使用检测
+int CoroutineStackCheck(Schedule& schedule, int id);
+
+// 初始化一个批量执行的上下文
+int BatchInit(Schedule& schedule);
+// 在批量执行上下文中添加要执行的任务
+void BatchAdd(Schedule& schedule, int batchId, Entry entry, void* arg, uint32_t priority = 0);
+// 执行批量操作
+void BatchRun(Schedule& schedule, int batchId);
+*/
