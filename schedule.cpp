@@ -59,7 +59,7 @@ void Schedule::CoroutineYield() {
 void Schedule::CoroutineResume(int32_t cid) {
   assert(is_master_);
   assert(cid >= 0 && cid < total_count_);
-  Coroutine *routine = coroutines_[cid];
+  Coroutine* routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
   routine->state = State::kRun;
   is_master_ = false;

@@ -36,7 +36,7 @@ class Schedule {
 
  private:
   // 从协程的执行入口
-  static void CoroutineRun(Schedule *schedule, Coroutine* routine);
+  static void CoroutineRun(Schedule *schedule, Coroutine *routine);
   // 从协程的初始化
   void CoroutineInit(Coroutine *routine, std::function<void()> entry);
 

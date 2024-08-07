@@ -7,10 +7,11 @@
 #include "UTestCore.h"
 using namespace std;
 
-void Sum(MyCoroutine::Schedule& schedule, int & total) {
-  total++;
-  schedule.CoroutineYield();
-  total++;
+void Sum(MyCoroutine::Schedule& schedule, int& total) {
+  for (int i = 0; i < 10; i++) {
+    schedule.CoroutineYield();
+    total++;
+  }
 }
 
 TEST_CASE(Schedule_Run) {
@@ -21,7 +22,7 @@ TEST_CASE(Schedule_Run) {
     ASSERT_EQ(cid, i);
   }
   schedule.Run();
-  ASSERT_EQ(total, 20480);
+  ASSERT_EQ(total, 204800);
 }
 
 RUN_ALL_TESTS();
