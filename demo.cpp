@@ -20,9 +20,17 @@ void func2(int b) {
   cout << "func2 end" << endl;
 }
 
+void func3(int c) {
+  cout << "func3 begin" << endl;
+  cout << "func3.c=" << b << endl;
+  schedule.CoroutineYield();
+  cout << "func3 end" << endl;
+}
+
 int main() {
   schedule.CoroutineCreate(func1, 10);
   schedule.CoroutineCreate(func2, 20);
+  schedule.CoroutineCreate(func3, 30);
   schedule.Run();
   return 0;
 }

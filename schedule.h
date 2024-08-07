@@ -3,7 +3,6 @@
 #include "coroutine.h"
 
 namespace MyCoroutine {
-
 constexpr int32_t kStackSize = 64 * 1024;     // 协程栈默认大小为 64K
 constexpr int32_t kMaxCoroutineSize = 10240;  // 允许创建的最大协程池大小
 
@@ -41,8 +40,8 @@ class Schedule {
   ucontext_t main_;                           // 保存主协程的上下文
   bool is_master_{true};                      // 是否主协程
   int32_t slave_cid_{kInvalidCid};            // 运行中的从协程的id（运行从协程时才有效）
-  int32_t total_count_{0};                    // 从协程总数
   int32_t not_idle_count_{0};                 // 运行中和挂起的从协程数
+  int32_t total_count_{0};                    // 从协程总数
   int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
 };
