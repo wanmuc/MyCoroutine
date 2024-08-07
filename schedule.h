@@ -35,9 +35,9 @@ class Schedule {
   void CoroutineResume(int32_t cid);
 
   // 设置协程本地变量
-  void CoroutineLocalSet(void *key, const LocalData &local_data);
+  void CoroutineLocalSet(void *key, const LocalVariable &local_variable);
   // 获取协程本地变量
-  bool CoroutineLocalGet(void *key, LocalData &local_data);
+  bool CoroutineLocalGet(void *key, LocalVariable &local_variable);
 
  private:
   // 从协程的执行入口

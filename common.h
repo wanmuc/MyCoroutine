@@ -25,18 +25,18 @@ enum class State {
 };
 
 // 协程本地变量结构体
-typedef struct LocalData {
+typedef struct LocalVariable {
   void *data{nullptr};
   function<void(void *)> free{nullptr};  // 用于释放本地协程变量的内存
-} LocalData;
+} LocalVariable;
 
 // 协程结构体
 typedef struct Coroutine {
-  int32_t cid{kInvalidCid};                // 从协程id
-  State state{State::kIdle};               // 从协程当前的状态
-  function<void()> entry{nullptr};         // 从协程入口函数
-  ucontext_t ctx;                          // 从协程执行上下文
-  uint8_t *stack{nullptr};                 // 每个协程独占的协程栈，动态分配
-  unordered_map<void *, LocalData> local;  // 协程本地变量，key是协程变量的内存地址
+  int32_t cid{kInvalidCid};                    // 从协程id
+  State state{State::kIdle};                   // 从协程当前的状态
+  function<void()> entry{nullptr};             // 从协程入口函数
+  ucontext_t ctx;                              // 从协程执行上下文
+  uint8_t *stack{nullptr};                     // 每个协程独占的协程栈，动态分配
+  unordered_map<void *, LocalVariable> local;  // 协程本地变量，key是协程变量的内存地址
 } Coroutine;
 };  // namespace MyCoroutine
