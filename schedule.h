@@ -12,7 +12,7 @@ class Schedule {
   explicit Schedule(int32_t total_count);
   ~Schedule();
   void Run();
-
+  // 从协程的创建函数，通过模版函数，可以支持不同原型的函数，作为从协程的执行函数
   template <typename Function, typename... Args>
   int32_t CoroutineCreate(Function &&func, Args &&...args) {
     int32_t cid = 0;
@@ -29,11 +29,15 @@ class Schedule {
     CoroutineInit(routine, entry);
     return cid;
   }
+  // 从协程让出cpu执行权
   void CoroutineYield();
+  // 主协程唤醒指定的从协程
   void CoroutineResume(int32_t cid);
 
  private:
+  // 从协程的执行入口
   static void CoroutineRun(Schedule *schedule, Coroutine* routine);
+  // 从协程的初始化
   void CoroutineInit(Coroutine *routine, std::function<void()> entry);
 
  private:

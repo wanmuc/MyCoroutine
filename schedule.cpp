@@ -5,16 +5,17 @@
 namespace MyCoroutine {
 
 void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
+  assert(schedule->is_master_);
   schedule->is_master_ = false;
   schedule->slave_cid_ = routine->cid;
-  routine->entry();
+  routine->entry();  // 执行从协程的入口函数
   assert(routine->state == State::kRun);
   routine->state = State::kIdle;
   schedule->is_master_ = true;
   schedule->slave_cid_ = kInvalidCid;  // slave_cid_更新为无效的从协程id
   schedule->not_idle_count_--;
-  // 函数执行完，调用栈会回到主协程，执行routine->ctx.uc_link指向的上下文的下一条指令
-  // 即回到主协程中，调用CoroutineResume函数的地方
+  // CoroutineRun执行完，调用栈会回到主协程，执行routine->ctx.uc_link指向的上下文的下一条指令
+  // 即CoroutineResume函数中的swapcontext调用返回了。
 }
 
 Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
@@ -48,6 +49,7 @@ void Schedule::CoroutineYield() {
   Coroutine* routine = coroutines_[slave_cid_];
   assert(routine->state == State::kRun);
   routine->state = State::kSuspend;
+  is_master_ = true;
   slave_cid_ = kInvalidCid;
   swapcontext(&routine->ctx, &main_);
   is_master_ = false;
@@ -58,8 +60,7 @@ void Schedule::CoroutineResume(int32_t cid) {
   assert(is_master_);
   assert(cid >= 0 && cid < total_count_);
   Coroutine *routine = coroutines_[cid];
-  assert(coroutines_[cid]->state == State::kReady ||
-         coroutines_[cid]->state == State::kSuspend);
+  assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
   routine->state = State::kRun;
   is_master_ = false;
   slave_cid_ = cid;
@@ -73,7 +74,9 @@ void Schedule::CoroutineResume(int32_t cid) {
 void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
   routine->entry = entry;
   routine->state = State::kReady;
-  routine->stack = new uint8_t[stack_size_];
+  if (nullptr == routine->stack) {
+    routine->stack = new uint8_t[stack_size_];
+  }
   getcontext(&routine->ctx);
   routine->ctx.uc_stack.ss_flags = 0;
   routine->ctx.uc_stack.ss_sp = routine->stack;
