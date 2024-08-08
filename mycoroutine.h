@@ -68,9 +68,9 @@ class CoroutineLocalVariable {
   }
   void Set(Type value) {
     Type* temp = new Type(value);
-    MyCoroutine::LocalVariable local_variable{temp, Free};
-    // local_variable.data = temp;
-    // local_variable.free = Free;
+    MyCoroutine::LocalVariable local_variable;
+    local_variable.data = temp;
+    local_variable.free = Free;
     schedule_->LocalVariableSet(this, local_variable);
   }
   Type& Get() {
