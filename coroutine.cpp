@@ -24,6 +24,10 @@ Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
     coroutines_[i] = new Coroutine;
     coroutines_[i]->cid = i;
   }
+  for (int32_t i = 0; i < kMaxBatchSize; i++) {
+    batchs_[i] = new Batch;
+    batchs_[i]->bid = i;
+  }
 }
 
 Schedule::~Schedule() {

@@ -33,10 +33,10 @@ typedef struct LocalVariable {
 
 // 批量执行结构体
 typedef struct Batch {
-  int32_t bid{kInvalidBid};                        // 批量执行id
-  State state{State::kIdle};                       // 批量执行的状态
-  int32_t parent_cid{kInvalidCid};                 // 父的从协程id
-  unordered_map<int32_t, bool> child_cid_2_finish; // 标记子的从协程是否执行完
+  int32_t bid{kInvalidBid};                         // 批量执行id
+  State state{State::kIdle};                        // 批量执行的状态
+  int32_t parent_cid{kInvalidCid};                  // 父的从协程id
+  unordered_map<int32_t, bool> child_cid_2_finish;  // 标记子的从协程是否执行完
 } Batch;
 
 // 协程结构体
