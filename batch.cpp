@@ -9,8 +9,8 @@ int32_t Schedule::BatchCreate() {
   for (int32_t i = 0; i < kMaxBatchSize; i++) {
     if (batchs_[i]->state == State::kIdle) {
       batchs_[i]->state = State::kReady;
-      batchs_[i]->parent_cid = slave_cid_;  // 设置批量执行关联的父从协程
-      coroutines_[slave_cid_]->bid = i;     // 设置从协程关联的批量执行
+      batchs_[i]->parent_cid = slave_cid_;      // 设置批量执行关联的父从协程
+      coroutines_[slave_cid_]->relate_bid = i;  // 设置从协程关联的批量执行
       return i;
     }
   }
@@ -26,6 +26,14 @@ void Schedule::BatchRun(int32_t bid) {
   batchs_[bid]->state = State::kIdle;
   batchs_[bid]->parent_cid = kInvalidCid;
   batchs_[bid]->child_cid_2_finish.clear();
-  coroutines_[slave_cid_]->bid = kInvalidBid;
+  coroutines_[slave_cid_]->relate_bid = kInvalidBid;
+}
+
+void Schedule::CoroutineResume4BatchStart(int32_t cid) {
+  // TODO
+}
+
+void Schedule::CoroutineResume4BatchFinish() {
+  // TODO
 }
 }  // namespace MyCoroutine

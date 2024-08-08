@@ -8,8 +8,11 @@
 using namespace std;
 
 namespace MyCoroutine {
-constexpr int32_t kInvalidCid = -1;  // 无效的从协程id
-constexpr int32_t kInvalidBid = -1;  // 无效的批量执行id
+constexpr int32_t kInvalidCid = -1;           // 无效的从协程id
+constexpr int32_t kInvalidBid = -1;           // 无效的批量执行id
+constexpr int32_t kStackSize = 64 * 1024;     // 协程栈默认大小为 64K
+constexpr int32_t kMaxBatchSize = 1024;       // 允许创建的最大批量执行池大小
+constexpr int32_t kMaxCoroutineSize = 10240;  // 允许创建的最大协程池大小
 /**
  * 从协程的状态机转移如下所示：
  *  kIdle->kReady
@@ -47,6 +50,6 @@ typedef struct Coroutine {
   ucontext_t ctx;                              // 从协程执行上下文
   uint8_t *stack{nullptr};                     // 每个协程独占的协程栈，动态分配
   unordered_map<void *, LocalVariable> local;  // 协程本地变量，key是协程变量的内存地址
-  int32_t bid{kInvalidBid};                    // 关联的批量执行id
+  int32_t relate_bid{kInvalidBid};             // 关联的批量执行id
 } Coroutine;
 };  // namespace MyCoroutine
