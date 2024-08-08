@@ -9,6 +9,7 @@ using namespace std;
 
 namespace MyCoroutine {
 constexpr int32_t kInvalidCid = -1;  // 无效的从协程id
+constexpr int32_t kInvalidBid = -1;  // 无效的批量执行id
 /**
  * 从协程的状态机转移如下所示：
  *  kIdle->kReady
@@ -30,6 +31,14 @@ typedef struct LocalVariable {
   function<void(void *)> free{nullptr};  // 用于释放本地协程变量的内存
 } LocalVariable;
 
+// 批量执行结构体
+typedef struct Batch {
+  int32_t bid{kInvalidBid};                        // 批量执行id
+  State state{State::kIdle};                       // 批量执行的状态
+  int32_t parent_cid{kInvalidCid};                 // 父的从协程id
+  unordered_map<int32_t, bool> child_cid_2_finish; // 标记子的从协程是否执行完
+} Batch;
+
 // 协程结构体
 typedef struct Coroutine {
   int32_t cid{kInvalidCid};                    // 从协程id
@@ -38,5 +47,6 @@ typedef struct Coroutine {
   ucontext_t ctx;                              // 从协程执行上下文
   uint8_t *stack{nullptr};                     // 每个协程独占的协程栈，动态分配
   unordered_map<void *, LocalVariable> local;  // 协程本地变量，key是协程变量的内存地址
+  int32_t bid{kInvalidBid};                    // 关联的批量执行id
 } Coroutine;
 };  // namespace MyCoroutine

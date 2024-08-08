@@ -14,17 +14,6 @@ void Sum(MyCoroutine::Schedule& schedule, int& total) {
   }
 }
 
-TEST_CASE(Schedule_Run) {
-  int total = 0;
-  MyCoroutine::Schedule schedule(10240);
-  for (int32_t i = 0; i < 10240; i++) {
-    int32_t cid = schedule.CoroutineCreate(Sum, std::ref(schedule), std::ref(total));
-    ASSERT_EQ(cid, i);
-  }
-  schedule.Run();
-  ASSERT_EQ(total, 102400);
-}
-
 void CoroutineLocalVariableFunc1(MyCoroutine::Schedule& schedule, MyCoroutine::CoroutineLocalVariable<int>& local_variable) {
    local_variable.Set(100);
    schedule.CoroutineYield();
@@ -43,6 +32,19 @@ void CoroutineLocalVariableFunc3(MyCoroutine::Schedule& schedule, MyCoroutine::C
    assert(local_variable.Get() == 300);
 }
 
+// 协程调度的测试用例
+TEST_CASE(Schedule_Run) {
+  int total = 0;
+  MyCoroutine::Schedule schedule(10240);
+  for (int32_t i = 0; i < 10240; i++) {
+    int32_t cid = schedule.CoroutineCreate(Sum, std::ref(schedule), std::ref(total));
+    ASSERT_EQ(cid, i);
+  }
+  schedule.Run();
+  ASSERT_EQ(total, 102400);
+}
+
+// 协程本地变量的测试用例
 TEST_CASE(CoroutineLocalVariable) {
   MyCoroutine::Schedule schedule(10240);
   MyCoroutine::CoroutineLocalVariable<int> local_variable(&schedule);

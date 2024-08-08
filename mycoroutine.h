@@ -5,11 +5,13 @@
 
 namespace MyCoroutine {
 constexpr int32_t kStackSize = 64 * 1024;     // 协程栈默认大小为 64K
+constexpr int32_t kMaxBatchSize = 1024;       // 允许创建的最大批量执行池大小
 constexpr int32_t kMaxCoroutineSize = 10240;  // 允许创建的最大协程池大小
 
 // 协程调度器
 class Schedule {
  public:
+  // TODO，构造函数要支持 bath_size的设置
   explicit Schedule(int32_t total_count);
   ~Schedule();
   void Run();
@@ -26,7 +28,7 @@ class Schedule {
       return kInvalidCid;
     }
     Coroutine *routine = coroutines_[cid];
-    std::function<void()> entry = std::bind(std::forward<Function>(func), std::forward<Args>(args)...);
+    function<void()> entry = bind(forward<Function>(func), forward<Args>(args)...);
     CoroutineInit(routine, entry);
     return cid;
   }
@@ -39,6 +41,23 @@ class Schedule {
   void LocalVariableSet(void *key, const LocalVariable &local_variable);
   // 获取协程本地变量
   bool LocalVariableGet(void *key, LocalVariable &local_variable);
+
+  // 创建一个批量执行
+  int32_t BatchCreate();
+  // 在批量执行中添加任务
+  template <typename Function, typename... Args>
+  void BatchAdd(int32_t bid, Function &&f, Args &&...args) {
+    assert(not is_master_); // 从协程中才可以调用
+    assert(bid >= 0 && bid < kMaxBatchSize); // 校验bid的合法性
+    assert(batchs_[bid]->state == State::kReady); // batch必须是ready的状态
+    assert(batchs_[bid]->parent_cid == slave_cid_); // 父的从协程id必须正确
+    int32_t cid = CoroutineCreate(forward<Function>(f), forward<Args>(args)...);
+    assert(cid != kInvalidCid);
+    coroutines_[cid]->bid = bid; // 设置关联的bid
+    batchs_[bid]->child_cid_2_finish[cid] = false;  // 子的从协程都没执行完
+  }
+  // 运行批量执行
+  void BatchRun(int32_t bid);
 
  private:
   // 从协程的执行入口
@@ -54,6 +73,7 @@ class Schedule {
   int32_t total_count_{0};                    // 从协程总数
   int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
+  Batch *batchs_[kMaxBatchSize];              // 批量执行数组池
 };
 
 // 协程本地变量模版类封装
@@ -83,22 +103,3 @@ class CoroutineLocalVariable {
   Schedule * schedule_{nullptr};
 };
 }  // namespace MyCoroutine
-
-
-/*
-// 恢复从协程batch中协程的调用，只能在主协程中调用
-int CoroutineResumeInBatch(Schedule& schedule, int id);
-// 恢复被插入batch卡点的从协程的调用，只能在主协程中调用
-int CoroutineResumeBatchFinish(Schedule& schedule);
-// 判断当前从协程是否在batch中
-bool CoroutineIsInBatch(Schedule& schedule);
-// 协程栈使用检测
-int CoroutineStackCheck(Schedule& schedule, int id);
-
-// 初始化一个批量执行的上下文
-int BatchInit(Schedule& schedule);
-// 在批量执行上下文中添加要执行的任务
-void BatchAdd(Schedule& schedule, int batchId, Entry entry, void* arg, uint32_t priority = 0);
-// 执行批量操作
-void BatchRun(Schedule& schedule, int batchId);
-*/
