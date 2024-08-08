@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include <assert.h>
 
 namespace MyCoroutine {
 constexpr int32_t kStackSize = 64 * 1024;     // 协程栈默认大小为 64K
