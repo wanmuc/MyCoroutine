@@ -59,23 +59,28 @@ class Schedule {
 template <typename Type>
 class CoroutineLocalVariable {
  public:
+  CoroutineLocalVariable(Schedule * schedule) {
+    schedule_ = schedule;
+  }
   static void Free(void* data) {
     if (data) delete (Type*)data;
   }
-  void Set(Schedule & schedule, Type value) {
+  void Set(Type value) {
     Type* temp = new Type(value);
     MyCoroutine::LocalVariable local_variable{
         .data = temp,
         .free = Free,
     };
-    schedule.LocalVariableSet(this, local_variable);
+    schedule_->LocalVariableSet(this, local_variable);
   }
-  Type& Get(Schedule & schedule) {
+  Type& Get() {
     MyCoroutine::LocalVariable local_variable;
-    bool result = schedule.LocalVariableGet(this, local_variable);
+    bool result = schedule_->LocalVariableGet(this, local_variable);
     assert(result == true);
     return *(Type*)local_variable.data;
   }
+ private:
+  Schedule * schedule_{nullptr};
 };
 }  // namespace MyCoroutine
 

@@ -45,7 +45,7 @@ void CoroutineLocalVariableFunc3(MyCoroutine::Schedule& schedule, MyCoroutine::C
 
 TEST_CASE(CoroutineLocalVariable) {
   MyCoroutine::Schedule schedule(10240);
-  MyCoroutine::CoroutineLocalVariable<int> local_variable;
+  MyCoroutine::CoroutineLocalVariable<int> local_variable(&schedule);
   schedule.CoroutineCreate(CoroutineLocalVariableFunc1, std::ref(schedule), std::ref(local_variable));
   schedule.CoroutineCreate(CoroutineLocalVariableFunc2, std::ref(schedule), std::ref(local_variable));
   schedule.CoroutineCreate(CoroutineLocalVariableFunc3, std::ref(schedule), std::ref(local_variable));
