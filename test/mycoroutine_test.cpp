@@ -25,4 +25,31 @@ TEST_CASE(Schedule_Run) {
   ASSERT_EQ(total, 102400);
 }
 
+void CoroutineLocalVariableFunc1(MyCoroutine::Schedule& schedule, MyCoroutine::CoroutineLocalVariable<int>& local_variable) {
+   local_variable.Set(100);
+   schedule.CoroutineYield();
+   assert(local_variable.Get() == 100);
+}
+
+void CoroutineLocalVariableFunc2(MyCoroutine::Schedule& schedule, MyCoroutine::CoroutineLocalVariable<int>& local_variable) {
+   local_variable.Set(200);
+   schedule.CoroutineYield();
+   assert(local_variable.Get() == 200);
+}
+
+void CoroutineLocalVariableFunc3(MyCoroutine::Schedule& schedule, MyCoroutine::CoroutineLocalVariable<int>& local_variable) {
+   local_variable.Set(300);
+   schedule.CoroutineYield();
+   assert(local_variable.Get() == 300);
+}
+
+TEST_CASE(CoroutineLocalVariable) {
+  MyCoroutine::Schedule schedule(10240);
+  MyCoroutine::CoroutineLocalVariable<int> local_variable;
+  schedule.CoroutineCreate(CoroutineLocalVariableFunc1, std::ref(schedule), std::ref(local_variable));
+  schedule.CoroutineCreate(CoroutineLocalVariableFunc2, std::ref(schedule), std::ref(local_variable));
+  schedule.CoroutineCreate(CoroutineLocalVariableFunc3, std::ref(schedule), std::ref(local_variable));
+  schedule.Run();
+}
+
 RUN_ALL_TESTS();

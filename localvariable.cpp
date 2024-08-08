@@ -3,7 +3,7 @@
 #include "mycoroutine.h"
 
 namespace MyCoroutine {
-void Schedule::CoroutineLocalSet(void* key, const LocalVariable& local_variable) {
+void Schedule::LocalVariableSet(void* key, const LocalVariable& local_variable) {
   assert(not is_master_);
   auto iter = coroutines_[slave_cid_]->local.find(key);
   if (iter != coroutines_[slave_cid_]->local.end()) {
@@ -12,7 +12,7 @@ void Schedule::CoroutineLocalSet(void* key, const LocalVariable& local_variable)
   coroutines_[slave_cid_]->local[key] = local_variable;
 }
 
-bool Schedule::CoroutineLocalGet(void* key, LocalVariable& local_variable) {
+bool Schedule::LocalVariableGet(void* key, LocalVariable& local_variable) {
   assert(not is_master_);
   auto iter = coroutines_[slave_cid_]->local.find(key);
   assert(iter != coroutines_[slave_cid_]->local.end());

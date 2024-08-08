@@ -35,9 +35,9 @@ class Schedule {
   void CoroutineResume(int32_t cid);
 
   // 设置协程本地变量
-  void CoroutineLocalSet(void *key, const LocalVariable &local_variable);
+  void LocalVariableSet(void *key, const LocalVariable &local_variable);
   // 获取协程本地变量
-  bool CoroutineLocalGet(void *key, LocalVariable &local_variable);
+  bool LocalVariableGet(void *key, LocalVariable &local_variable);
 
  private:
   // 从协程的执行入口
@@ -54,7 +54,31 @@ class Schedule {
   int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
 };
+
+// 协程本地变量模版类封装
+template <typename Type>
+class CoroutineLocalVariable {
+ public:
+  static void Free(void* data) {
+    if (data) delete (Type*)data;
+  }
+  void Set(Schedule & schedule, Type value) {
+    Type* temp = new Type(value);
+    MyCoroutine::LocalVariable local_variable{
+        .data = temp,
+        .free = Free,
+    };
+    schedule.LocalVariableSet(this, local_variable);
+  }
+  Type& Get(Schedule & schedule) {
+    MyCoroutine::LocalVariable local_variable;
+    bool result = schedule.LocalVariableGet(this, local_variable);
+    assert(result == true);
+    return *(Type*)local_variable.data;
+  }
+};
 }  // namespace MyCoroutine
+
 
 /*
 // 恢复从协程batch中协程的调用，只能在主协程中调用
@@ -63,10 +87,6 @@ int CoroutineResumeInBatch(Schedule& schedule, int id);
 int CoroutineResumeBatchFinish(Schedule& schedule);
 // 判断当前从协程是否在batch中
 bool CoroutineIsInBatch(Schedule& schedule);
-// 设置协程本地变量
-void CoroutineLocalSet(Schedule& schedule, void* key, LocalData localData);
-// 获取协程本地变量
-bool CoroutineLocalGet(Schedule& schedule, void* key, LocalData& localData);
 // 协程栈使用检测
 int CoroutineStackCheck(Schedule& schedule, int id);
 
