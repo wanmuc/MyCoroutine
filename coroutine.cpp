@@ -22,7 +22,7 @@ void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
            schedule->batchs_[bid]->child_cid_2_finish.end());
     schedule->batchs_[bid]->child_cid_2_finish[cid] = true;
     if (schedule->IsBatchDone(bid)) {
-      schedule->batch_finish_cid_list.push_back(cid);
+      schedule->batch_finish_cid_list.push_back(schedule->batchs_[bid]->parent_cid);
     }
     routine->relate_bid = kInvalidBid;
   }
