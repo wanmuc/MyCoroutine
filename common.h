@@ -3,6 +3,7 @@
 #include <ucontext.h>
 
 #include <functional>
+#include <algorithm>
 #include <unordered_map>
 
 using namespace std;
