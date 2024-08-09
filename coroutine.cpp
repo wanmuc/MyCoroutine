@@ -64,7 +64,13 @@ void Schedule::Run() {
         CoroutineResume(i);
         continue;
       }
-      // 从协程中有Batch的，要判断是Batch是否已经执行完
+      int32_t bid = coroutines_[i]->relate_bid;
+      // Batch的子从协程，直接唤醒从协程的执行
+      if (coroutines_[i]->cid != batchs_[bid]->parent_cid) {
+        CoroutineResume(i);
+        continue;
+      }
+      // Batch的父从协程，要判断是Batch是否已经执行完
       auto iter = find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(), i);
       if (iter != batch_finish_cid_list.end()) {
         CoroutineResume(i);
