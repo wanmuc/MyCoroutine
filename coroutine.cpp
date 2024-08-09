@@ -17,56 +17,18 @@ void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
   int32_t cid = routine->cid;
   int32_t bid = routine->relate_bid;
   // 从协程有关联Batch，且是Batch中的子从协程
-  if (bid != kInvalidBid && routine->cid != batchs_[bid]->parent_cid) {
-    assert(batchs_[bid]->child_cid_2_finish.find(cid) !=
-           batchs_[bid]->child_cid_2_finish.end());
-    batchs_[bid]->child_cid_2_finish[cid] = true;
-    if (IsBatchDone(bid)) {
-      batch_finish_cid_list.push_back(cid);
+  if (bid != kInvalidBid && routine->cid != schedule->batchs_[bid]->parent_cid) {
+    assert(schedule->batchs_[bid]->child_cid_2_finish.find(cid) !=
+           schedule->batchs_[bid]->child_cid_2_finish.end());
+    schedule->batchs_[bid]->child_cid_2_finish[cid] = true;
+    if (schedule->IsBatchDone(bid)) {
+      schedule->batch_finish_cid_list.push_back(cid);
     }
     routine->relate_bid = kInvalidBid;
   }
   // CoroutineRun执行完，调用栈会回到主协程，执行routine->ctx.uc_link指向的上下文的下一条指令
   // 即CoroutineResume函数中的swapcontext调用返回了。
 }
-
-/*
-static bool isBatchDone(Schedule& schedule, int batchId) {
-  assert(batchId >= 0 && batchId < MAX_BATCH_RUN_SIZE);
-  assert(schedule.batchs[batchId]->state == Run);  // 校验batch的状态，必须是run的状态
-  for (const auto& kv : schedule.batchs[batchId]->cid2finish) {
-    if (not kv.second) return false;  // 只要有一个关联的协程没执行完，就返回false
-  }
-  return true;
-}
-
-static void CoroutineRun(Schedule* schedule) {
-  schedule->isMasterCoroutine = false;
-  int id = schedule->runningCoroutineId;
-  assert(id >= 0 && id < schedule->coroutineCnt);
-  Coroutine* routine = schedule->coroutines[id];
-  // 执行entry函数
-  routine->entry();
-  // entry函数执行完之后，才能把协程状态更新为idle，并标记runningCoroutineId为无效的id
-  routine->state = Idle;
-  // 如果有关联的batch，则要更新batch的信息，设置batch关联的协程已经执行完
-  if (routine->relateBatchId != INVALID_BATCH_ID) {
-    Batch* batch = schedule->batchs[routine->relateBatchId];
-    batch->cid2finish[id] = true;
-    // batch都执行完了，则更新batchFinishList。
-    if (isBatchDone(*schedule, routine->relateBatchId)) {
-      schedule->batchFinishList.push_back(batch->relateId);
-    }
-    routine->relateBatchId = INVALID_BATCH_ID;
-  }
-  schedule->activityCnt--;
-  schedule->runningCoroutineId = INVALID_ROUTINE_ID;
-  if (schedule->stackCheck) {
-    assert(Normal == CoroutineStackCheck(*schedule, id));
-  }
-  // 这个函数执行完，调用栈会回到主协程中，执行routine->ctx.uc_link指向的上下文的下一条指令
-}
-*/
 
 Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
   assert(total_count_ > 0 && total_count_ <= kMaxCoroutineSize);
@@ -129,8 +91,9 @@ void Schedule::CoroutineResume(int32_t cid) {
   assert(cid >= 0 && cid < total_count_);
   Coroutine* routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
-  assert(routine->relate_bid != kInvalidBid &&
-         not batch_finish_cid_list.find(cid) != batch_finish_cid_list.end());
+  if (routine->relate_bid != kInvalidBid) {
+    assert(batch_finish_cid_list.find(cid) != batch_finish_cid_list.end());
+  }
   routine->state = State::kRun;
   is_master_ = false;
   slave_cid_ = cid;
