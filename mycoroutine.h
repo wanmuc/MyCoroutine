@@ -52,17 +52,19 @@ class Schedule {
   // 在批量执行中添加任务
   template <typename Function, typename... Args>
   void BatchAdd(int32_t bid, Function &&f, Args &&...args) {
-    assert(not is_master_);                          // 从协程中才可以调用
-    assert(bid >= 0 && bid < kMaxBatchSize);         // 校验bid的合法性
-    assert(batchs_[bid]->state == State::kReady);    // batch必须是ready的状态
-    assert(batchs_[bid]->parent_cid == slave_cid_);  // 父的从协程id必须正确
+    assert(not is_master_);                       // 从协程中才可以调用
+    assert(bid >= 0 && bid < kMaxBatchSize);      // 校验bid的合法性
+    assert(batchs_[bid]->state == State::kReady); // batch必须是ready的状态
+    assert(batchs_[bid]->parent_cid == slave_cid_); // 父的从协程id必须正确
     int32_t cid = CoroutineCreate(forward<Function>(f), forward<Args>(args)...);
     assert(cid != kInvalidCid);
-    coroutines_[cid]->bid = bid;                    // 设置关联的bid
-    batchs_[bid]->child_cid_2_finish[cid] = false;  // 子的从协程都没执行完
+    coroutines_[cid]->relate_bid = bid;            // 设置关联的bid
+    batchs_[bid]->child_cid_2_finish[cid] = false; // 子的从协程都没执行完
   }
   // 运行批量执行
   void BatchRun(int32_t bid);
+  // 批量执行是否完成
+  bool IsBatchDone(int32_t bid);
 
  private:
   // 从协程的执行入口
@@ -79,7 +81,7 @@ class Schedule {
   int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
   Batch *batchs_[kMaxBatchSize];              // 批量执行数组池
-  list<int> batch_finish_list;                // 完成了批量执行的关联的协程的id
+  list<int> batch_finish_cid_list;            // 完成了批量执行的关联的协程的id
 };
 
 // 协程本地变量模版类封装

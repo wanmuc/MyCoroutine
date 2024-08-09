@@ -29,6 +29,15 @@ void Schedule::BatchRun(int32_t bid) {
   coroutines_[slave_cid_]->relate_bid = kInvalidBid;
 }
 
+bool Schedule::IsBatchDone(int32_t bid) {
+  assert(bid >= 0 && bid < kMaxBatchSize);
+  assert(batchs_[bid]->state == State::kRun);  // 校验Batch的状态，必须是run的状态
+  for (const auto& kv : batchs_[bid]->child_cid_2_finish) {
+    if (not kv.second) return false;  // 只要有一个关联的子从协程没执行完，就返回false
+  }
+  return true;
+}
+
 void Schedule::CoroutineResume4BatchStart(int32_t cid) {
   assert(is_master_);
   assert(cid >= 0 && cid < total_count_);
