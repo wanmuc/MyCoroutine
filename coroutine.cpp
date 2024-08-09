@@ -98,7 +98,7 @@ void Schedule::CoroutineResume(int32_t cid) {
   assert(cid >= 0 && cid < total_count_);
   Coroutine* routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
-  if (routine->relate_bid != kInvalidBid) {
+  if (routine->relate_bid != kInvalidBid && batchs_[routine->relate_bid]->parent_cid == cid) {
     assert(find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(),
                 cid) != batch_finish_cid_list.end());
   }
