@@ -32,6 +32,29 @@ void CoroutineLocalVariableFunc3(MyCoroutine::Schedule& schedule, MyCoroutine::C
    assert(local_variable.Get() == 300);
 }
 
+void BatchChild(MyCoroutine::Schedule& schedule, int& total) {
+  total++;
+}
+
+void BatchParent(MyCoroutine::Schedule& schedule, int& total) {
+  int32_t bid = schedule.BatchCreate();
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchRun(bid);
+
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchRun(bid);
+
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
+  schedule.BatchRun(bid);
+}
+
+
 // 协程调度的测试用例
 TEST_CASE(Schedule_Run) {
   int total = 0;
@@ -45,13 +68,23 @@ TEST_CASE(Schedule_Run) {
 }
 
 // 协程本地变量的测试用例
-TEST_CASE(CoroutineLocalVariable) {
+TEST_CASE(Coroutine_LocalVariable) {
   MyCoroutine::Schedule schedule(10240);
   MyCoroutine::CoroutineLocalVariable<int> local_variable(&schedule);
   schedule.CoroutineCreate(CoroutineLocalVariableFunc1, std::ref(schedule), std::ref(local_variable));
   schedule.CoroutineCreate(CoroutineLocalVariableFunc2, std::ref(schedule), std::ref(local_variable));
   schedule.CoroutineCreate(CoroutineLocalVariableFunc3, std::ref(schedule), std::ref(local_variable));
   schedule.Run();
+}
+
+// 协程Batch特性的测试用例
+TEST_CASE(Coroutine_Batch) {
+  int total = 0;
+  MyCoroutine::Schedule schedule(10240);
+  int32_t cid = schedule.CoroutineCreate(BatchParent, std::ref(schedule), std::ref(total));
+  ASSERT_EQ(cid, 0);
+  schedule.Run();
+  ASSERT_EQ(total, 9);
 }
 
 RUN_ALL_TESTS();
