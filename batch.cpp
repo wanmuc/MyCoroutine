@@ -48,16 +48,16 @@ void Schedule::CoroutineResume4BatchStart(int32_t cid) {
   }
   int32_t bid = routine->relate_bid;
   for (const auto & item : batchs_[bid]->child_cid_2_finish) {
-    CoroutineResume(item->first);  // 唤醒Batch中的子从协程
+    CoroutineResume(item.first);  // 唤醒Batch中的子从协程
   }
 }
 
 void Schedule::CoroutineResume4BatchFinish() {
   assert(is_master_);
-  assert(batch_finish_list.size() <= 0);
-  for (const auto & cid : batch_finish_list) {
+  assert(batch_finish_cid_list.size() <= 0);
+  for (const auto & cid : batch_finish_cid_list) {
     CoroutineResume(cid);
   }
-  batch_finish_list.clear();
+  batch_finish_cid_list.clear();
 }
 }  // namespace MyCoroutine
