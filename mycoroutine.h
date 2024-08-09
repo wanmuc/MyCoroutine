@@ -87,14 +87,14 @@ template <typename Type>
 class CoroutineLocalVariable {
  public:
   CoroutineLocalVariable(Schedule *schedule) { schedule_ = schedule; }
-  static void Free(void *data) {
+  static void free(void *data) {
     if (data) delete (Type *)data;
   }
   void Set(Type value) {
-    Type *temp = new Type(value);
+    Type *data = new Type(value);
     MyCoroutine::LocalVariable local_variable;
-    local_variable.data = temp;
-    local_variable.free = Free;
+    local_variable.data = data;
+    local_variable.free = free;
     schedule_->LocalVariableSet(this, local_variable);
   }
   Type &Get() {
