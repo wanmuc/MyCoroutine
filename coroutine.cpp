@@ -56,7 +56,7 @@ void Schedule::Run() {
   assert(is_master_);
   while (not_idle_count_ > 0) {
     for (int32_t i = 0; i < total_count_; i++) {
-      if (coroutines_[i]->state == State::Idle || coroutines_[i]->state == State::kRun) {
+      if (coroutines_[i]->state == State::kIdle || coroutines_[i]->state == State::kRun) {
         continue;
       }
       // 从协程中没有Batch的，直接唤醒从协程的执行
@@ -65,9 +65,10 @@ void Schedule::Run() {
         continue;
       }
       // 从协程中有Batch的，要判断是Batch是否已经执行完
-      if (batch_finish_cid_list.find(i) != batch_finish_cid_list.end()) {
+      auto iter = find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(), i);
+      if (iter != batch_finish_cid_list.end()) {
         CoroutineResume(i);
-        batch_finish_cid_list.erase(i);  // 唤醒之后，需要立即从batch_finish_cid_list删除对应的cid
+        batch_finish_cid_list.erase(iter);  // 唤醒之后，需要立即从batch_finish_cid_list删除对应的cid
       }
     }
   }
@@ -92,7 +93,8 @@ void Schedule::CoroutineResume(int32_t cid) {
   Coroutine* routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
   if (routine->relate_bid != kInvalidBid) {
-    assert(batch_finish_cid_list.find(cid) != batch_finish_cid_list.end());
+    assert(find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(),
+                cid) != batch_finish_cid_list.end());
   }
   routine->state = State::kRun;
   is_master_ = false;
