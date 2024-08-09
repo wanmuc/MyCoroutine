@@ -43,11 +43,13 @@ void BatchParent(MyCoroutine::Schedule& schedule, int& total) {
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
   schedule.BatchRun(bid);
 
+  bid = schedule.BatchCreate();
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
   schedule.BatchRun(bid);
 
+  bid = schedule.BatchCreate();
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
   schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
