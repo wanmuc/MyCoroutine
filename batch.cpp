@@ -40,7 +40,7 @@ bool Schedule::IsBatchDone(int32_t bid) {
 
 void Schedule::CoroutineResume4BatchStart(int32_t cid) {
   assert(is_master_);
-  assert(cid >= 0 && cid < total_count_);
+  assert(cid >= 0 && cid < coroutine_count_);
   Coroutine* routine = coroutines_[cid];
   // 从协程中没有关联的Batch，则没有需要唤醒的子从协程
   if (routine->relate_bid == kInvalidBid) {
