@@ -9,8 +9,7 @@ namespace MyCoroutine {
 // 协程调度器
 class Schedule {
  public:
-  // TODO，构造函数要支持 bath_size的设置
-  explicit Schedule(int32_t total_count);
+  explicit Schedule(int32_t coroutine_count, int32_t max_task_in_batch = 0);
   ~Schedule();
 
   void Run();
@@ -18,12 +17,12 @@ class Schedule {
   template <typename Function, typename... Args>
   int32_t CoroutineCreate(Function &&func, Args &&...args) {
     int32_t cid = 0;
-    for (cid = 0; cid < total_count_; cid++) {
+    for (cid = 0; cid < coroutine_count_; cid++) {
       if (coroutines_[cid]->state == State::kIdle) {
         break;
       }
     }
-    if (cid >= total_count_) {
+    if (cid >= coroutine_count_) {
       return kInvalidCid;
     }
     Coroutine *routine = coroutines_[cid];
@@ -52,14 +51,14 @@ class Schedule {
   // 在批量执行中添加任务
   template <typename Function, typename... Args>
   void BatchAdd(int32_t bid, Function &&f, Args &&...args) {
-    assert(not is_master_);                       // 从协程中才可以调用
-    assert(bid >= 0 && bid < kMaxBatchSize);      // 校验bid的合法性
-    assert(batchs_[bid]->state == State::kReady); // batch必须是ready的状态
-    assert(batchs_[bid]->parent_cid == slave_cid_); // 父的从协程id必须正确
+    assert(not is_master_);                          // 从协程中才可以调用
+    assert(bid >= 0 && bid < kMaxBatchSize);         // 校验bid的合法性
+    assert(batchs_[bid]->state == State::kReady);    // batch必须是ready的状态
+    assert(batchs_[bid]->parent_cid == slave_cid_);  // 父的从协程id必须正确
     int32_t cid = CoroutineCreate(forward<Function>(f), forward<Args>(args)...);
     assert(cid != kInvalidCid);
-    coroutines_[cid]->relate_bid = bid;            // 设置关联的bid
-    batchs_[bid]->child_cid_2_finish[cid] = false; // 子的从协程都没执行完
+    coroutines_[cid]->relate_bid = bid;             // 设置关联的bid
+    batchs_[bid]->child_cid_2_finish[cid] = false;  // 子的从协程都没执行完
   }
   // 运行批量执行
   void BatchRun(int32_t bid);
@@ -77,7 +76,7 @@ class Schedule {
   bool is_master_{true};                      // 是否主协程
   int32_t slave_cid_{kInvalidCid};            // 运行中的从协程的id（运行从协程时才有效）
   int32_t not_idle_count_{0};                 // 运行中和挂起的从协程数
-  int32_t total_count_{0};                    // 从协程总数
+  int32_t coroutine_count_{0};                // 从协程总数
   int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
   Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
   Batch *batchs_[kMaxBatchSize];              // 批量执行数组池

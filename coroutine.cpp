@@ -18,8 +18,7 @@ void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
   int32_t bid = routine->relate_bid;
   // 从协程有关联Batch，且是Batch中的子从协程
   if (bid != kInvalidBid && routine->cid != schedule->batchs_[bid]->parent_cid) {
-    assert(schedule->batchs_[bid]->child_cid_2_finish.find(cid) !=
-           schedule->batchs_[bid]->child_cid_2_finish.end());
+    assert(schedule->batchs_[bid]->child_cid_2_finish.find(cid) != schedule->batchs_[bid]->child_cid_2_finish.end());
     schedule->batchs_[bid]->child_cid_2_finish[cid] = true;
     if (schedule->IsBatchDone(bid)) {
       schedule->batch_finish_cid_list.push_back(schedule->batchs_[bid]->parent_cid);
@@ -30,9 +29,10 @@ void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
   // 即CoroutineResume函数中的swapcontext调用返回了。
 }
 
-Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
-  assert(total_count_ > 0 && total_count_ <= kMaxCoroutineSize);
-  for (int32_t i = 0; i < total_count_; i++) {
+Schedule::Schedule(int32_t coroutine_count, int32_t max_task_in_batch) : coroutine_count_(coroutine_count) {
+  assert(coroutine_count_ > 0 && coroutine_count_ <= kMaxCoroutineSize);
+  assert((max_task_in_batch + 1) * coroutine_count_ <= kMaxCoroutineSize);
+  for (int32_t i = 0; i < coroutine_count_; i++) {
     coroutines_[i] = new Coroutine;
     coroutines_[i]->cid = i;
   }
@@ -43,7 +43,7 @@ Schedule::Schedule(int32_t total_count) : total_count_(total_count) {
 }
 
 Schedule::~Schedule() {
-  for (int32_t i = 0; i < total_count_; i++) {
+  for (int32_t i = 0; i < coroutine_count_; i++) {
     if (coroutines_[i]->stack) delete[] coroutines_[i]->stack;
     for (const auto& item : coroutines_[i]->local) {
       item.second.free(item.second.data);  // 释放协程本地变量的内存
@@ -55,7 +55,7 @@ Schedule::~Schedule() {
 void Schedule::Run() {
   assert(is_master_);
   while (not_idle_count_ > 0) {
-    for (int32_t i = 0; i < total_count_; i++) {
+    for (int32_t i = 0; i < coroutine_count_; i++) {
       if (coroutines_[i]->state == State::kIdle || coroutines_[i]->state == State::kRun) {
         continue;
       }
@@ -82,7 +82,7 @@ void Schedule::Run() {
 
 void Schedule::CoroutineYield() {
   assert(not is_master_);
-  assert(slave_cid_ >= 0 && slave_cid_ < total_count_);
+  assert(slave_cid_ >= 0 && slave_cid_ < coroutine_count_);
   Coroutine* routine = coroutines_[slave_cid_];
   assert(routine->state == State::kRun);
   routine->state = State::kSuspend;
@@ -95,12 +95,11 @@ void Schedule::CoroutineYield() {
 
 void Schedule::CoroutineResume(int32_t cid) {
   assert(is_master_);
-  assert(cid >= 0 && cid < total_count_);
+  assert(cid >= 0 && cid < coroutine_count_);
   Coroutine* routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
   if (routine->relate_bid != kInvalidBid && batchs_[routine->relate_bid]->parent_cid == cid) {
-    assert(find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(),
-                cid) != batch_finish_cid_list.end());
+    assert(find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(), cid) != batch_finish_cid_list.end());
   }
   routine->state = State::kRun;
   is_master_ = false;
