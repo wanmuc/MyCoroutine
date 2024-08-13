@@ -54,10 +54,10 @@ void Schedule::CoroutineResume4BatchStart(int32_t cid) {
 
 void Schedule::CoroutineResume4BatchFinish() {
   assert(is_master_);
-  assert(batch_finish_cid_list.size() <= 1);
-  for (const auto& cid : batch_finish_cid_list) {
+  assert(batch_finish_cid_list_.size() <= 1);
+  for (const auto& cid : batch_finish_cid_list_) {
     CoroutineResume(cid);
   }
-  batch_finish_cid_list.clear();
+  batch_finish_cid_list_.clear();
 }
 }  // namespace MyCoroutine

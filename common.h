@@ -43,6 +43,20 @@ typedef struct Batch {
   unordered_map<int32_t, bool> child_cid_2_finish;  // 标记子的从协程是否执行完
 } Batch;
 
+// 协程互斥锁
+typedef struct Mutex {
+  uint64_t id;                 // 互斥锁
+  int hold_cid;                // 当前持有互斥锁的从协程id
+  bool lock;                   // true表示被锁定，false表示被解锁
+  list<int> suspend_cid_list;  // 因为等待互斥锁而被挂起的从协程id列表
+} Mutex;
+
+// 协程互斥锁管理器
+typedef struct MutexManage {
+  uint64_t alloc_id{0};                       // 用于互斥锁 id 的分配
+  unordered_map<uint64_t, CoMutex *> mutexs;  // 互斥锁集合
+} MutexManage;
+
 // 协程结构体
 typedef struct Coroutine {
   int32_t cid{kInvalidCid};                    // 从协程id

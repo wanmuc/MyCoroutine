@@ -21,7 +21,7 @@ void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
     assert(schedule->batchs_[bid]->child_cid_2_finish.find(cid) != schedule->batchs_[bid]->child_cid_2_finish.end());
     schedule->batchs_[bid]->child_cid_2_finish[cid] = true;
     if (schedule->IsBatchDone(bid)) {
-      schedule->batch_finish_cid_list.push_back(schedule->batchs_[bid]->parent_cid);
+      schedule->batch_finish_cid_list_.push_back(schedule->batchs_[bid]->parent_cid);
     }
     routine->relate_bid = kInvalidBid;
   }
@@ -71,10 +71,10 @@ void Schedule::Run() {
         continue;
       }
       // Batch的父从协程，要判断是Batch是否已经执行完
-      auto iter = find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(), i);
-      if (iter != batch_finish_cid_list.end()) {
+      auto iter = find(batch_finish_cid_list_.begin(), batch_finish_cid_list_.end(), i);
+      if (iter != batch_finish_cid_list_.end()) {
         CoroutineResume(i);
-        batch_finish_cid_list.erase(iter);  // 唤醒之后，需要立即从batch_finish_cid_list删除对应的cid
+        batch_finish_cid_list_.erase(iter);  // 唤醒之后，需要立即从batch_finish_cid_list_删除对应的cid
       }
     }
   }
@@ -99,7 +99,7 @@ void Schedule::CoroutineResume(int32_t cid) {
   Coroutine* routine = coroutines_[cid];
   assert(coroutines_[cid]->state == State::kReady || coroutines_[cid]->state == State::kSuspend);
   if (routine->relate_bid != kInvalidBid && batchs_[routine->relate_bid]->parent_cid == cid) {
-    assert(find(batch_finish_cid_list.begin(), batch_finish_cid_list.end(), cid) != batch_finish_cid_list.end());
+    assert(find(batch_finish_cid_list_.begin(), batch_finish_cid_list_.end(), cid) != batch_finish_cid_list_.end());
   }
   routine->state = State::kRun;
   is_master_ = false;
