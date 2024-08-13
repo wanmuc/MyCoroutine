@@ -61,7 +61,7 @@ void WaitGroupSub(MyCoroutine::Schedule& schedule, int& total) {
 }
 
 void BatchWaitGroup(MyCoroutine::Schedule& schedule, int& total) {
-  WaitGroup wait_group(&schedule);
+  ‘MyCoroutine::WaitGroup wait_group(&schedule);
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
