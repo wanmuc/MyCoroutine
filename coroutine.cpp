@@ -50,6 +50,9 @@ Schedule::~Schedule() {
     }
     delete coroutines_[i];
   }
+  for (int32_t i = 0; i < kMaxBatchSize; i++) {
+    delete batchs_[i];
+  }
 }
 
 void Schedule::Run() {
