@@ -53,8 +53,8 @@ typedef struct Mutex {
 
 // 协程互斥锁管理器
 typedef struct MutexManage {
-  uint64_t alloc_id{0};                       // 用于互斥锁 id 的分配
-  unordered_map<uint64_t, CoMutex *> mutexs;  // 互斥锁集合
+  uint64_t alloc_id{0};                     // 用于互斥锁 id 的分配
+  unordered_map<uint64_t, Mutex *> mutexs;  // 互斥锁集合
 } MutexManage;
 
 // 协程结构体
