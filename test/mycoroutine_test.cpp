@@ -60,7 +60,7 @@ void WaitGroupSub(MyCoroutine::Schedule& schedule, int& total) {
   total++;
 }
 
-void WaitGroup(MyCoroutine::Schedule& schedule, int& total) {
+void BatchWaitGroup(MyCoroutine::Schedule& schedule, int& total) {
   WaitGroup wait_group(&schedule);
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
@@ -101,10 +101,10 @@ TEST_CASE(Coroutine_Batch) {
 }
 
 // WaitGroup的测试用例
-TEST_CASE(Coroutine_Batch_WaitGroup) {
+TEST_CASE(Coroutine_BatchWaitGroup) {
   int total = 0;
   MyCoroutine::Schedule schedule(10240);
-  int32_t cid = schedule.CoroutineCreate(WaitGroup, std::ref(schedule), std::ref(total));
+  int32_t cid = schedule.CoroutineCreate(BatchWaitGroup, std::ref(schedule), std::ref(total));
   ASSERT_EQ(cid, 0);
   schedule.Run();
   ASSERT_EQ(total, 3);
