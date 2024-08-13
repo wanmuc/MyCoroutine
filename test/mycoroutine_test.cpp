@@ -1,3 +1,4 @@
+#include "localvariable.h"
 #include "mycoroutine.h"
 #include "waitgroup.h"
 
@@ -107,7 +108,7 @@ TEST_CASE(Coroutine_Batch) {
   ASSERT_EQ(total, 9);
 }
 
-// WaitGroup的测试用例
+// WaitGroup封装的测试用例
 TEST_CASE(Coroutine_BatchWaitGroup) {
   int total = 0;
   MyCoroutine::Schedule schedule(10240);
