@@ -82,30 +82,4 @@ class Schedule {
   Batch *batchs_[kMaxBatchSize];              // 批量执行数组池
   list<int> batch_finish_cid_list;            // 完成了批量执行的关联的协程的id
 };
-
-// 协程本地变量模版类封装
-template <typename Type>
-class CoroutineLocalVariable {
- public:
-  CoroutineLocalVariable(Schedule *schedule) { schedule_ = schedule; }
-  static void free(void *data) {
-    if (data) delete (Type *)data;
-  }
-  void Set(Type value) {
-    Type *data = new Type(value);
-    MyCoroutine::LocalVariable local_variable;
-    local_variable.data = data;
-    local_variable.free = free;
-    schedule_->LocalVariableSet(this, local_variable);
-  }
-  Type &Get() {
-    MyCoroutine::LocalVariable local_variable;
-    bool result = schedule_->LocalVariableGet(this, local_variable);
-    assert(result == true);
-    return *(Type *)local_variable.data;
-  }
-
- private:
-  Schedule *schedule_{nullptr};
-};
 }  // namespace MyCoroutine
