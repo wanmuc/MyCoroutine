@@ -1,4 +1,5 @@
 #include "mycoroutine.h"
+#include "waitgroup.h"
 
 #include <assert.h>
 
@@ -66,6 +67,12 @@ void BatchWaitGroup(MyCoroutine::Schedule& schedule, int& total) {
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Wait();
+
+  MyCoroutine::WaitGroup wait_group2(&schedule);
+  wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
+  wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
+  wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
+  wait_group2.Wait();
 }
 
 // 协程调度的测试用例
@@ -107,7 +114,7 @@ TEST_CASE(Coroutine_BatchWaitGroup) {
   int32_t cid = schedule.CoroutineCreate(BatchWaitGroup, std::ref(schedule), std::ref(total));
   ASSERT_EQ(cid, 0);
   schedule.Run();
-  ASSERT_EQ(total, 3);
+  ASSERT_EQ(total, 6);
 }
 
 RUN_ALL_TESTS();

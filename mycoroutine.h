@@ -50,12 +50,12 @@ class Schedule {
   int32_t BatchCreate();
   // 在批量执行中添加任务
   template <typename Function, typename... Args>
-  void BatchAdd(int32_t bid, Function &&f, Args &&...args) {
+  void BatchAdd(int32_t bid, Function &&func, Args &&...args) {
     assert(not is_master_);                          // 从协程中才可以调用
     assert(bid >= 0 && bid < kMaxBatchSize);         // 校验bid的合法性
     assert(batchs_[bid]->state == State::kReady);    // batch必须是ready的状态
     assert(batchs_[bid]->parent_cid == slave_cid_);  // 父的从协程id必须正确
-    int32_t cid = CoroutineCreate(forward<Function>(f), forward<Args>(args)...);
+    int32_t cid = CoroutineCreate(forward<Function>(func), forward<Args>(args)...);
     assert(cid != kInvalidCid);
     coroutines_[cid]->relate_bid = bid;             // 设置关联的bid
     batchs_[bid]->child_cid_2_finish[cid] = false;  // 子的从协程都没执行完
@@ -106,23 +106,6 @@ class CoroutineLocalVariable {
   }
 
  private:
-  Schedule *schedule_{nullptr};
-};
-
-class WaitGroup {
-public:
-  WaitGroup(Schedule *schedule) : schedule_(schedule) {
-    bid_ = schedule_->BatchCreate();
-  }
-  template <typename Function, typename... Args>
-  void Add(Function &&f, Args &&...args) {
-    schedule_->BatchAdd(bid_, std::forward<Function>(f),
-                        std::forward<Args>(args)...);
-  }
-  void Wait() { schedule_->BatchRun(bid_); }
-
-private:
-  int bid_; // Batch的id
   Schedule *schedule_{nullptr};
 };
 }  // namespace MyCoroutine
