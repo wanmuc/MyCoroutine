@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include <list>
+#include <unordered_set>
 
 #include "common.h"
 
