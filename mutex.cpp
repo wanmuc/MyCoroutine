@@ -33,7 +33,7 @@ void Schedule::CoMutexLock(CoMutex& co_mutex) {
   }
 }
 
-void Schedule::CoMutexTryLock(CoMutex &co_mutex) {
+bool Schedule::CoMutexTryLock(CoMutex &co_mutex) {
   assert(not is_master_);
   if (not co_mutex.lock) {
     co_mutex.lock = true; // 加锁成功，直接返回
