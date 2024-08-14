@@ -6,6 +6,15 @@
 namespace MyCoroutine {
 // 协程互斥锁
 class Mutex {
-  // TODO
+public:
+  Mutex(Schedule *schedule);
+  ~Mutex();
+
+  void Lock();
+  void UnLock();
+
+private:
+  CoMutex co_mutex_;
+  Schedule *schedule_;
 };
 }  // namespace MyCoroutine

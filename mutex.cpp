@@ -39,4 +39,14 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   co_mutex.lock = false;  // 设置成false即可，后续由调度器schedule去激活那些被挂起的从协程
   co_mutex.cid = kInvalidCid;
 }
+
+Mutex::Mutex(Schedule *schedule) : schedule_(schedule) {
+  schedule_->CoMutexInit(&co_mutex_);
+}
+
+Mutex::~Mutex() { schedule_->CoMutexClear(&co_mutex_); }
+
+void Mutex::Lock() { schedule_->CoMutexLock(&co_mutex_); }
+
+void Mutex::UnLock() { schedule_->CoMutexUnLock(&co_mutex_); }
 }  // namespace MyCoroutine
