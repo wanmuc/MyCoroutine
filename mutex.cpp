@@ -40,7 +40,7 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   co_mutex.hold_cid = kInvalidCid;
 }
 
-Mutex::Mutex(Schedule schedule) : schedule_(schedule) {
+Mutex::Mutex(Schedule& schedule) : schedule_(schedule) {
   schedule_.CoMutexInit(co_mutex_);
 }
 
