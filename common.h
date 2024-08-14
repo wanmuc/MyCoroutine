@@ -46,17 +46,10 @@ typedef struct Batch {
 
 // 协程互斥锁
 typedef struct CoMutex {
-  uint64_t id;                     // 互斥锁的id
   int32_t hold_cid;                // 当前持有互斥锁的从协程id
   bool lock;                       // true表示被锁定，false表示被解锁
   list<int32_t> suspend_cid_list;  // 因为等待互斥锁而被挂起的从协程id列表
 } CoMutex;
-
-// 协程互斥锁管理器
-typedef struct CoMutexManage {
-  uint64_t alloc_id{0};                       // 用于互斥锁 id 的分配
-  unordered_map<uint64_t, CoMutex *> mutexs;  // 互斥锁集合
-} CoMutexManage;
 
 // 协程结构体
 typedef struct Coroutine {

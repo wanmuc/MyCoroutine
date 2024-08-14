@@ -80,6 +80,6 @@ private:
   Coroutine *coroutines_[kMaxCoroutineSize]; // 从协程数组池
   Batch *batchs_[kMaxBatchSize];             // 批量执行数组池
   list<int> batch_finish_cid_list_; // 完成了批量执行的关联的协程的id
-  CoMutexManage mutex_manage_;      // 互斥锁管理
+  unordered_set<CoMutex *> mutexs_;  // 互斥锁集合
 };
 } // namespace MyCoroutine

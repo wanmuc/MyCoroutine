@@ -2,15 +2,14 @@
 
 namespace MyCoroutine {
 void Schedule::CoMutexInit(CoMutex& co_mutex) {
-  co_mutex.id = mutex_manage_.alloc_id++;
   co_mutex.lock = false;
   co_mutex.hold_cid = slave_cid_;
-  assert(mutex_manage_.mutexs.find(co_mutex.id) == mutex_manage_.mutexs.end());
-  mutex_manage_.mutexs[co_mutex.id] = &co_mutex;
+  assert(mutexs_.find(&co_mutex) == mutexs_.end());
+  mutexs_.insert(&co_mutex);
 }
 
 void Schedule::CoMutexClear(CoMutex &co_mutex) {
-  mutex_manage_.mutexs.erase(co_mutex.id);
+  mutexs_.erase(&co_mutex);
 }
 
 void Schedule::CoMutexLock(CoMutex& co_mutex) {
