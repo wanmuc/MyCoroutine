@@ -56,7 +56,6 @@ void Schedule::CoMutexResume() {
     if (mutex->suspend_cid_list.size() <= 0) continue;  // 锁已经释放了，但是没有挂起的从协程，也不需要唤醒
     int32_t cid = mutex->suspend_cid_list.front();
     mutex->suspend_cid_list.pop_front();
-    mutex->suspend_cid_list.erase(cid);
     CoroutineResume(cid);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
   }
 }
