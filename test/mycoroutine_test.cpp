@@ -64,13 +64,13 @@ void WaitGroupSub(MyCoroutine::Schedule& schedule, int& total) {
 }
 
 void BatchWaitGroup(MyCoroutine::Schedule& schedule, int& total) {
-  MyCoroutine::WaitGroup wait_group(&schedule);
+  MyCoroutine::WaitGroup wait_group(schedule);
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group.Wait();
 
-  MyCoroutine::WaitGroup wait_group2(&schedule);
+  MyCoroutine::WaitGroup wait_group2(schedule);
   wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
   wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
@@ -92,7 +92,7 @@ TEST_CASE(Schedule_Run) {
 // 协程本地变量的测试用例
 TEST_CASE(Coroutine_LocalVariable) {
   MyCoroutine::Schedule schedule(10240);
-  MyCoroutine::CoroutineLocalVariable<int> local_variable(&schedule);
+  MyCoroutine::CoroutineLocalVariable<int> local_variable(schedule);
   schedule.CoroutineCreate(CoroutineLocalVariableFunc1, std::ref(schedule), std::ref(local_variable));
   schedule.CoroutineCreate(CoroutineLocalVariableFunc2, std::ref(schedule), std::ref(local_variable));
   schedule.CoroutineCreate(CoroutineLocalVariableFunc3, std::ref(schedule), std::ref(local_variable));
