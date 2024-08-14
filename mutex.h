@@ -25,5 +25,5 @@ public:
 
 private:
   Mutex &mutex_;
-}
+};
 }  // namespace MyCoroutine
