@@ -62,14 +62,12 @@ void Schedule::Run() {
       if (coroutines_[i]->state == State::kIdle || coroutines_[i]->state == State::kRun) {
         continue;
       }
-      // 从协程中没有Batch的，直接唤醒从协程的执行
-      if (coroutines_[i]->relate_bid == kInvalidBid) {
+      if (coroutines_[i]->relate_bid == kInvalidBid) {  // 从协程中没有Batch的，直接唤醒从协程的执行
         CoroutineResume(i);
         continue;
       }
       int32_t bid = coroutines_[i]->relate_bid;
-      // Batch的子从协程，直接唤醒从协程的执行
-      if (coroutines_[i]->cid != batchs_[bid]->parent_cid) {
+      if (coroutines_[i]->cid != batchs_[bid]->parent_cid) {  // Batch的子从协程，直接唤醒从协程的执行
         CoroutineResume(i);
         continue;
       }
@@ -80,6 +78,8 @@ void Schedule::Run() {
         batch_finish_cid_list_.erase(iter);  // 唤醒之后，需要立即从batch_finish_cid_list_删除对应的cid
       }
     }
+    CoMutexResume();  // 唤醒等待互斥锁的从协程
+    CoCondResume();  // 唤醒等待等待条件变量的从协程
   }
 }
 

@@ -66,6 +66,15 @@ public:
   void CoMutexLock(CoMutex &co_mutex);    // 锁定互斥锁
   void CoMutexUnLock(CoMutex &co_mutex);  // 解锁互斥锁
   bool CoMutexTryLock(CoMutex &co_mutex); // 尝试锁定互斥锁
+  void CoMutexResume();
+
+  void CoCondInit(CoCond& cond);  // 条件变量初始化
+  void CoCondClear(CoCond& cond);  // 条件变量清理
+  // 条件变量wait，支持设置超时时间的版本，需要配合Reactor模型的定时器功能来实现
+  void CoCondWait(CoCond& cond, std::function<bool()> pred);  
+  void CoCondNotifyOne(CoCond& cond);  // 条件变量kNotifyOne
+  void CoCondNotifyAll(CoCond& cond);  // 条件变量kNotifyAll
+  void CoCondResume();
 
 private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
@@ -81,6 +90,7 @@ private:
   Coroutine *coroutines_[kMaxCoroutineSize]; // 从协程数组池
   Batch *batchs_[kMaxBatchSize];             // 批量执行数组池
   list<int> batch_finish_cid_list_; // 完成了批量执行的关联的协程的id
-  unordered_set<CoMutex *> mutexs_;  // 互斥锁集合
+  unordered_set<CoMutex *> mutexs_; // 互斥锁集合
+  unordered_set<CoCond *> conds_;   // 条件变量集合
 };
 } // namespace MyCoroutine

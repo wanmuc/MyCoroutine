@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <list>
+#include <unordered_set>
 #include <unordered_map>
 
 using namespace std;
@@ -30,6 +31,18 @@ enum class State {
   kSuspend = 4,  // 挂起
 };
 
+/**
+ * 条件变量的状态，条件变量的状态转移如下：
+ * kNotifyNone -> kNotifyOne,kNotifyAll
+ * kNotifyOne -> kNotifyNone,kNotifyOne,kNotifyAll
+ * kNotifyAll -> kNotifyNone,kNotifyAll
+ */
+enum CondState {
+  kNotifyNone = 1, // 无通知
+  kNotifyOne = 2,  // 通知一个等待者
+  kNotifyAll = 3,  // 通知所有等待者
+};
+
 // 协程本地变量结构体
 typedef struct LocalVariable {
   void *data{nullptr};
@@ -50,6 +63,12 @@ typedef struct CoMutex {
   bool lock;                       // true表示被锁定，false表示被解锁
   list<int32_t> suspend_cid_list;  // 因为等待互斥锁而被挂起的从协程id列表
 } CoMutex;
+
+// 协程条件变量
+typedef struct CoCond {
+  CondState state;  // 条件变量状态
+  unordered_set<int> suspend_cid_set;  // 被挂起的从协程id查重集合
+} CoCond;
 
 // 协程结构体
 typedef struct Coroutine {
