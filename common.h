@@ -67,7 +67,7 @@ typedef struct CoMutex {
 // 协程条件变量
 typedef struct CoCond {
   CondState state;  // 条件变量状态
-  unordered_set<int> suspend_cid_set;  // 被挂起的从协程id查重集合
+  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoCond;
 
 // 协程结构体
