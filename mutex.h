@@ -7,7 +7,7 @@ namespace MyCoroutine {
 // 协程互斥锁
 class Mutex {
 public:
-  Mutex(Schedule *schedule);
+  Mutex(Schedule& schedule);
   ~Mutex();
 
   void Lock();
@@ -15,7 +15,7 @@ public:
 
 private:
   CoMutex co_mutex_;
-  Schedule *schedule_;
+  Schedule &schedule_;
 };
 
 class LockGuard {

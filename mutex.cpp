@@ -40,13 +40,13 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   co_mutex.hold_cid = kInvalidCid;
 }
 
-Mutex::Mutex(Schedule *schedule) : schedule_(schedule) {
-  schedule_->CoMutexInit(&co_mutex_);
+Mutex::Mutex(Schedule schedule) : schedule_(schedule) {
+  schedule_.CoMutexInit(co_mutex_);
 }
 
-Mutex::~Mutex() { schedule_->CoMutexClear(&co_mutex_); }
+Mutex::~Mutex() { schedule_.CoMutexClear(co_mutex_); }
 
-void Mutex::Lock() { schedule_->CoMutexLock(&co_mutex_); }
+void Mutex::Lock() { schedule_.CoMutexLock(co_mutex_); }
 
-void Mutex::UnLock() { schedule_->CoMutexUnLock(&co_mutex_); }
+void Mutex::UnLock() { schedule_.CoMutexUnLock(co_mutex_); }
 }  // namespace MyCoroutine
