@@ -1,41 +1,42 @@
 #include "mycoroutine.h"
 
 namespace MyCoroutine {
-void Schedule::MutexInit(Mutex& mutex) {
-  mutex.id = schedule.mutexManage.alloc_id;
-  mutex.lock = false;
-  mutex.cid = schedule.runningCoroutineId;
-  schedule.mutexManage.alloc_id++;
-  assert(schedule.mutexManage.mutexs.find(mutex.id) == schedule.mutexManage.mutexs.end());
-  schedule.mutexManage.mutexs[mutex.id] = &mutex;
+void Schedule::CoMutexInit(CoMutex& co_mutex) {
+  co_mutex.id = mutex_manage_.alloc_id++;
+  co_mutex.lock = false;
+  co_mutex.cid = slave_cid_;
+  assert(mutex_manage_.mutexs.find(co_mutex.id) == mutex_manage_.mutexs.end());
+  mutex_manage_.mutexs[co_mutex.id] = &co_mutex;
 }
 
-void CoMutexClear(Schedule& schedule, CoMutex& mutex) { schedule.mutexManage.mutexs.erase(mutex.id); }
+void Schedule::CoMutexClear(CoMutex &co_mutex) {
+  mutex_manage_.mutexs.erase(co_mutex.id);
+}
 
-void CoMutexLock(Schedule& schedule, CoMutex& mutex) {
+void Schedule::CoMutexLock(CoMutex& co_mutex) {
   while (true) {
-    assert(not schedule.isMasterCoroutine);
-    if (not mutex.lock) {
-      mutex.lock = true;  // 加锁成功，直接返回
-      mutex.cid = schedule.runningCoroutineId;
+    assert(not is_master_);
+    if (not co_mutex.lock) {
+      co_mutex.lock = true;  // 加锁成功，直接返回
+      co_mutex.cid = slave_cid_;
       return;
     }
-    // 不可重入，同一个从协程自能锁定一次，不能锁定多次
-    assert(mutex.cid != schedule.runningCoroutineId);
-    // 更新因为等待互斥量而被挂起的从协程id
-    if (mutex.suspend_id_set.find(schedule.runningCoroutineId) == mutex.suspend_id_set.end()) {
-      mutex.suspend_id_set.insert(schedule.runningCoroutineId);
-      mutex.suspend_id_list.push_back(schedule.runningCoroutineId);
+    // 不可重入，同一个从协程只能锁定一次，不能锁定多次
+    assert(co_mutex.cid != slave_cid_);
+    // 更新因为等待互斥锁而被挂起的从协程id
+    auto iter = find(co_mutex.suspend_cid_list.begin(), co_mutex.suspend_cid_list.end(), slave_cid_);
+    if (iter == co_mutex.suspend_cid_list.end()) {
+      co_mutex.suspend_cid_list.push_back(slave_cid_);
     }
     // 从协程让出执行权
-    CoroutineYield(schedule);
+    CoroutineYield();
   }
 }
 
-void CoMutexUnLock(Schedule& schedule, CoMutex& mutex) {
-  assert(not schedule.isMasterCoroutine);
-  assert(mutex.lock);  // 必须是锁定的
-  mutex.lock = false;  // 设置层false即可，后续由调度器schedule去激活那些被挂起的从协程
-  mutex.cid = kInvalidRoutineId;
+void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
+  assert(not is_master_);
+  assert(co_mutex.lock);  // 必须是锁定的
+  co_mutex.lock = false;  // 设置成false即可，后续由调度器schedule去激活那些被挂起的从协程
+  co_mutex.cid = kInvalidCid;
 }
 }  // namespace MyCoroutine
