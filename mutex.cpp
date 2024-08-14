@@ -1,10 +1,10 @@
-#include "mycoroutine.h"
+#include "mutex.h"
 
 namespace MyCoroutine {
 void Schedule::CoMutexInit(CoMutex& co_mutex) {
   co_mutex.id = mutex_manage_.alloc_id++;
   co_mutex.lock = false;
-  co_mutex.cid = slave_cid_;
+  co_mutex.hold_cid = slave_cid_;
   assert(mutex_manage_.mutexs.find(co_mutex.id) == mutex_manage_.mutexs.end());
   mutex_manage_.mutexs[co_mutex.id] = &co_mutex;
 }
@@ -18,11 +18,11 @@ void Schedule::CoMutexLock(CoMutex& co_mutex) {
     assert(not is_master_);
     if (not co_mutex.lock) {
       co_mutex.lock = true;  // 加锁成功，直接返回
-      co_mutex.cid = slave_cid_;
+      co_mutex.hold_cid = slave_cid_;
       return;
     }
     // 不可重入，同一个从协程只能锁定一次，不能锁定多次
-    assert(co_mutex.cid != slave_cid_);
+    assert(co_mutex.hold_cid != slave_cid_);
     // 更新因为等待互斥锁而被挂起的从协程id
     auto iter = find(co_mutex.suspend_cid_list.begin(), co_mutex.suspend_cid_list.end(), slave_cid_);
     if (iter == co_mutex.suspend_cid_list.end()) {
@@ -37,7 +37,7 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   assert(not is_master_);
   assert(co_mutex.lock);  // 必须是锁定的
   co_mutex.lock = false;  // 设置成false即可，后续由调度器schedule去激活那些被挂起的从协程
-  co_mutex.cid = kInvalidCid;
+  co_mutex.hold_cid = kInvalidCid;
 }
 
 Mutex::Mutex(Schedule *schedule) : schedule_(schedule) {
