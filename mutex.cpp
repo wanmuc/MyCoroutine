@@ -33,6 +33,16 @@ void Schedule::CoMutexLock(CoMutex& co_mutex) {
   }
 }
 
+void Schedule::CoMutexTryLock(CoMutex &co_mutex) {
+  assert(not is_master_);
+  if (not co_mutex.lock) {
+    co_mutex.lock = true; // 加锁成功，直接返回
+    co_mutex.hold_cid = slave_cid_;
+    return true;
+  }
+  return false;
+}
+
 void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   assert(not is_master_);
   assert(co_mutex.lock);  // 必须是锁定的
@@ -49,4 +59,6 @@ Mutex::~Mutex() { schedule_.CoMutexClear(co_mutex_); }
 void Mutex::Lock() { schedule_.CoMutexLock(co_mutex_); }
 
 void Mutex::UnLock() { schedule_.CoMutexUnLock(co_mutex_); }
+
+bool Mutex::TryLock() { return schedule_.CoMutexTryLock(co_mutex_); }
 }  // namespace MyCoroutine
