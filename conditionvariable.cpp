@@ -14,8 +14,8 @@ void Schedule::CoCondClear(CoCond &co_cond) {
 void Schedule::CoCondWait(CoCond &co_cond, std::function<bool()> pred) {
   while (not pred()) {
     assert(not is_master_);
-    // 更新因为的等待条件变量而被挂起的从协程id
-    conds_.suspend_cid_set.insert(slave_cid_);
+    // 更新因为的等待条件变量而被挂起的从协程
+    co_cond.suspend_cid_set.insert(slave_cid_);
     CoroutineYield();
   }
 }
@@ -38,7 +38,7 @@ void Schedule::CoCondResume() {
     // 有挂起的协程才调整通知的状态
     if (cond->state == CondState::kNotifyOne) {
       int32_t cid = *cond->suspend_cid_set.begin();
-      cond->suspend_cid_set.erase(id);
+      cond->suspend_cid_set.erase(cid);
       CoroutineResume(cid);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
     } else if (cond->state == CondState::kNotifyAll) {
       // 唤醒所有等待的从协程
