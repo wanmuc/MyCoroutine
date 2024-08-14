@@ -1,4 +1,5 @@
 #include "conditionvariable.h"
+#include "mycoroutine.h"
 
 namespace MyCoroutine {
 void Schedule::CoCondInit(CoCond &co_cond) {
