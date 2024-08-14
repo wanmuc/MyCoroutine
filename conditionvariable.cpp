@@ -30,26 +30,26 @@ void Schedule::CoCondNotifyAll(CoCond &co_cond) {
 }
 
 void Schedule::CoCondResume() {
-  for (const auto &item : conds_) {
-    if (item->state == CondState::kNotifyNone) continue; // 没有通知，不需要互相等待的从协程
+  for (auto *cond : conds_) {
+    if (cond->state == CondState::kNotifyNone) continue; // 没有通知，不需要互相等待的从协程
     // 通知了，但是没有挂起的从协程，也不需要唤醒，注意这里不调整通知的状态
-    if (item->suspend_cid_set.size() <= 0) continue;
+    if (cond->suspend_cid_set.size() <= 0) continue;
     // 有挂起的协程才调整通知的状态
-    if (item->state == CondState::kNotifyOne) {
-      int32_t cid = *item->suspend_cid_set.begin();
-      item->suspend_cid_set.erase(id);
+    if (cond->state == CondState::kNotifyOne) {
+      int32_t cid = *cond->suspend_cid_set.begin();
+      cond->suspend_cid_set.erase(id);
       CoroutineResume(cid);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
-    } else if (item->state == CondState::kNotifyAll) {
+    } else if (cond->state == CondState::kNotifyAll) {
       // 唤醒所有等待的从协程
-      unordered_set<int32_t> cid_set = item->suspend_cid_set;
-      item->suspend_cid_set.clear();  // 需要在这里就清空这个集合，因为被唤醒的从协程可能重新再阻塞
+      unordered_set<int32_t> cid_set = cond->suspend_cid_set;
+      cond->suspend_cid_set.clear();  // 需要在这里就清空这个集合，因为被唤醒的从协程可能重新再阻塞
       for (const auto &cid : cid_set) {
         CoroutineResume(cid);
       }
     } else {
       assert(0);
     }
-    item->state = CondState::kNotifyNone;
+    cond->state = CondState::kNotifyNone;
   }
 }
 } // namespace MyCoroutine
