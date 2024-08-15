@@ -102,7 +102,7 @@ TEST_CASE(Coroutine_LocalVariable) {
 // 协程Batch特性的测试用例
 TEST_CASE(Coroutine_Batch) {
   int total = 0;
-  MyCoroutine::Schedule schedule(10240);
+  MyCoroutine::Schedule schedule(2560, 3);
   int32_t cid = schedule.CoroutineCreate(BatchParent, std::ref(schedule), std::ref(total));
   ASSERT_EQ(cid, 0);
   schedule.Run();
@@ -112,7 +112,7 @@ TEST_CASE(Coroutine_Batch) {
 // WaitGroup封装的测试用例
 TEST_CASE(Coroutine_BatchWaitGroup) {
   int total = 0;
-  MyCoroutine::Schedule schedule(10240);
+  MyCoroutine::Schedule schedule(2560, 3);
   int32_t cid = schedule.CoroutineCreate(BatchWaitGroup, std::ref(schedule), std::ref(total));
   ASSERT_EQ(cid, 0);
   schedule.Run();
