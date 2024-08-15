@@ -26,10 +26,12 @@ void Schedule::CoroutineRun(Schedule* schedule, Coroutine* routine) {
     routine->relate_bid = kInvalidBid;
   }
   // CoroutineRun执行完，调用栈会回到主协程，执行routine->ctx.uc_link指向的上下文的下一条指令
-  // 即CoroutineResume函数中的swapcontext调用返回了。
+  // 即CoroutineResume函数中的swapcontext调用返回了
 }
 
-Schedule::Schedule(int32_t coroutine_count, int32_t max_task_in_batch) : coroutine_count_(coroutine_count) {
+Schedule::Schedule(int32_t coroutine_count, int32_t max_concurrency_in_batch)
+    : coroutine_count_(coroutine_count),
+      max_concurrency_in_batch_(max_concurrency_in_batch) {
   assert(coroutine_count_ > 0 && coroutine_count_ <= kMaxCoroutineSize);
   assert((max_task_in_batch + 1) * coroutine_count_ <= kMaxCoroutineSize);
   for (int32_t i = 0; i < coroutine_count_; i++) {
@@ -79,7 +81,7 @@ void Schedule::Run() {
       }
     }
     CoMutexResume();  // 唤醒等待互斥锁的从协程
-    CoCondResume();  // 唤醒等待等待条件变量的从协程
+    CoCondResume();  // 唤醒等待条件变量的从协程
   }
 }
 

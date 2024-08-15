@@ -10,7 +10,7 @@ namespace MyCoroutine {
 // 协程调度器
 class Schedule {
 public:
-  explicit Schedule(int32_t coroutine_count, int32_t max_task_in_batch = 0);
+  explicit Schedule(int32_t coroutine_count, int32_t max_concurrency_in_batch = 0);
   ~Schedule();
   
   // 从协程的创建函数，通过模版函数，可以支持不同原型的函数，作为从协程的执行函数
@@ -46,16 +46,21 @@ public:
   int32_t BatchCreate();  // 创建一个批量执行
   // 在批量执行中添加任务
   template <typename Function, typename... Args>
-  void BatchAdd(int32_t bid, Function &&func, Args &&...args) {  
+  bool BatchAdd(int32_t bid, Function &&func, Args &&...args) {  
     assert(not is_master_);                       // 从协程中才可以调用
     assert(bid >= 0 && bid < kMaxBatchSize);      // 校验bid的合法性
     assert(batchs_[bid]->state == State::kReady); // batch必须是ready的状态
     assert(batchs_[bid]->parent_cid == slave_cid_); // 父的从协程id必须正确
+    assert(batchs_[bid]->child_cid_2_finish);
+    if (batchs_[bid]->child_cid_2_finish.size() >= max_concurrency_in_batch_) {
+      return false;
+    }
     int32_t cid =
         CoroutineCreate(forward<Function>(func), forward<Args>(args)...);
     assert(cid != kInvalidCid);
     coroutines_[cid]->relate_bid = bid;            // 设置关联的bid
     batchs_[bid]->child_cid_2_finish[cid] = false; // 子的从协程都没执行完
+    return true;
   }
 
   void BatchRun(int32_t bid);    // 运行批量执行
@@ -87,9 +92,10 @@ private:
   int32_t not_idle_count_{0};      // 运行中和挂起的从协程数
   int32_t coroutine_count_{0};     // 从协程总数
   int32_t stack_size_{kStackSize}; // 从协程栈大小，单位字节
+  int32_t max_concurrency_in_batch_;  // 一个Batch中最大的并发数
   Coroutine *coroutines_[kMaxCoroutineSize]; // 从协程数组池
   Batch *batchs_[kMaxBatchSize];             // 批量执行数组池
-  list<int> batch_finish_cid_list_; // 完成了批量执行的关联的协程的id
+  list<int> batch_finish_cid_list_; // 完成了批量执行的关联的从协程id
   unordered_set<CoMutex *> mutexs_; // 互斥锁集合
   unordered_set<CoCond *> conds_;   // 条件变量集合
 };
