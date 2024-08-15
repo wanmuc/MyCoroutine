@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <functional>
 #include <list>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 
@@ -37,10 +37,10 @@ enum class State {
  * kNotifyOne -> kNotifyNone,kNotifyOne,kNotifyAll
  * kNotifyAll -> kNotifyNone,kNotifyAll
  */
-enum CondState {
-  kNotifyNone = 1, // 无通知
-  kNotifyOne = 2,  // 通知一个等待者
-  kNotifyAll = 3,  // 通知所有等待者
+enum class CondState {
+  kNotifyNone = 1,  // 无通知
+  kNotifyOne = 2,   // 通知一个等待者
+  kNotifyAll = 3,   // 通知所有等待者
 };
 
 // 协程本地变量结构体
@@ -66,7 +66,7 @@ typedef struct CoMutex {
 
 // 协程条件变量
 typedef struct CoCond {
-  CondState state;  // 条件变量状态
+  CondState state;                         // 条件变量状态
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoCond;
 
