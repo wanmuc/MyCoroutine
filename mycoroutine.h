@@ -51,7 +51,6 @@ public:
     assert(bid >= 0 && bid < kMaxBatchSize);      // 校验bid的合法性
     assert(batchs_[bid]->state == State::kReady); // batch必须是ready的状态
     assert(batchs_[bid]->parent_cid == slave_cid_); // 父的从协程id必须正确
-    assert(batchs_[bid]->child_cid_2_finish);
     if (batchs_[bid]->child_cid_2_finish.size() >= max_concurrency_in_batch_) {
       return false;
     }
