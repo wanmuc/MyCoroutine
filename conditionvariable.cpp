@@ -31,6 +31,7 @@ void Schedule::CoCondNotifyAll(CoCond &co_cond) {
 }
 
 void Schedule::CoCondResume() {
+  assert(is_master_);
   for (auto *cond : conds_) {
     if (cond->state == CondState::kNotifyNone) continue; // 没有通知，不需要互相等待的从协程
     // 通知了，但是没有挂起的从协程，也不需要唤醒，注意这里不调整通知的状态
