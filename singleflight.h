@@ -16,7 +16,8 @@ enum class SingleFlightState {
 };
 
 class SingleFlight {
- private:
-  SingleFlightState state_;
+public:
+private:
+  SingleFlightState state_{SingleFlightState::kInit};
 };
 }  // namespace MyCoroutine

@@ -14,7 +14,7 @@ void Schedule::CoCondClear(CoCond &co_cond) {
 void Schedule::CoCondWait(CoCond &co_cond, std::function<bool()> pred) {
   while (not pred()) {
     assert(not is_master_);
-    // 更新因为的等待条件变量而被挂起的从协程
+    // 更新因为等待条件变量而被挂起的从协程
     co_cond.suspend_cid_set.insert(slave_cid_);
     CoroutineYield();
   }
@@ -54,4 +54,13 @@ void Schedule::CoCondResume() {
     cond->state = CondState::kNotifyNone;
   }
 }
+
+void ConditionVariable::NotifyOne() { schedule_.NotifyOne(&co_cond_); }
+
+void ConditionVariable::NotifyAll() { schedule_.NotifyAll(&co_cond_); }
+
+void ConditionVariable::Wait(std::function<bool()> pred) {
+  schedule_.Wait(&co_cond_, pred);
+}
+
 } // namespace MyCoroutine

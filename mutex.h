@@ -7,8 +7,10 @@ namespace MyCoroutine {
 // 协程互斥锁
 class Mutex {
 public:
-  Mutex(Schedule& schedule);
-  ~Mutex();
+  Mutex(Schedule &schedule) : schedule_(schedule) {
+    schedule_.CoMutexInit(co_mutex_);
+  }
+  ~Mutex() { schedule_.CoMutexClear(co_mutex_); }
 
   void Lock();
   void UnLock();
