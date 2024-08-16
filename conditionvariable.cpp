@@ -55,9 +55,9 @@ void Schedule::CoCondResume() {
   }
 }
 
-void ConditionVariable::NotifyOne() { schedule_.NotifyOne(co_cond_); }
+void ConditionVariable::NotifyOne() { schedule_.CoCondNotifyOne(co_cond_); }
 
-void ConditionVariable::NotifyAll() { schedule_.NotifyAll(co_cond_); }
+void ConditionVariable::NotifyAll() { schedule_.CoCondNotifyAll(co_cond_); }
 
 void ConditionVariable::Wait(std::function<bool()> pred) {
   schedule_.Wait(co_cond_, pred);
