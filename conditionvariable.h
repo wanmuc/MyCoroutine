@@ -8,9 +8,9 @@ namespace MyCoroutine {
 class ConditionVariable {
 public:
   ConditionVariable(Schedule &schedule) : schedule_(schedule) {
-    schedule_.CoCondInit(&co_cond_);
+    schedule_.CoCondInit(co_cond_);
   }
-  ~ConditionVariable() { schedule_.CoCondClear(&co_cond_); }
+  ~ConditionVariable() { schedule_.CoCondClear(co_cond_); }
 
   void NotifyOne();
   void NotifyAll();
