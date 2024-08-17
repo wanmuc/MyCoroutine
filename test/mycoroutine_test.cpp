@@ -17,6 +17,8 @@ void Sum(MyCoroutine::Schedule& schedule, int& total) {
   }
 }
 
+void Sum2(int& total) { total += 10; }
+
 void SumBatch(MyCoroutine::Schedule& schedule, int& total) {
   for (int i = 0; i < 10; i++) {
     schedule.CoroutineYield();
@@ -107,6 +109,13 @@ TEST_CASE(Schedule_Run2) {
   MyCoroutine::Schedule schedule(10240);
   for (int32_t i = 0; i < 10240; i++) {
     int32_t cid = schedule.CoroutineCreate(Sum, std::ref(schedule), std::ref(total));
+    ASSERT_EQ(cid, i);
+  }
+  schedule.Run();
+  ASSERT_EQ(total, 102400);
+  total = 0;
+  for (int32_t i = 0; i < 10240; i++) {
+    int32_t cid = schedule.CoroutineCreate(Sum2, std::ref(total));
     ASSERT_EQ(cid, i);
   }
   schedule.Run();
