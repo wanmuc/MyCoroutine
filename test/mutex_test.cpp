@@ -38,9 +38,9 @@ TEST_CASE(CoMutex_LockAndUnLock) {
   MyCoroutine::CoMutex co_mutex;
   MyCoroutine::Schedule schedule(1024);
   schedule.CoMutexInit(co_mutex);
-  schedule.CoroutineCreate(Mutex1, std::ref(schedule), std::ref(CoMutex), std::ref(value));
-  schedule.CoroutineCreate(Mutex2, std::ref(schedule), std::ref(CoMutex), std::ref(value));
-  schedule.CoroutineCreate(Mutex3, std::ref(schedule), std::ref(CoMutex), std::ref(value));
+  schedule.CoroutineCreate(Mutex1, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.CoroutineCreate(Mutex2, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.CoroutineCreate(Mutex3, std::ref(schedule), std::ref(co_mutex), std::ref(value));
   schedule.Run();
   schedule.CoMutexClear(co_mutex);
   ASSERT_EQ(value, 3);
