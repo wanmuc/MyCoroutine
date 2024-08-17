@@ -1,5 +1,3 @@
-#include "mycoroutine.h"
-
 #include <assert.h>
 
 #include <iostream>
@@ -7,9 +5,11 @@
 #include "UTestCore.h"
 #include "localvariable.h"
 #include "mutex.h"
+#include "mycoroutine.h"
 #include "waitgroup.h"
 using namespace std;
 
+namespace {
 void Sum(MyCoroutine::Schedule& schedule, int& total) {
   for (int i = 0; i < 10; i++) {
     schedule.CoroutineYield();
@@ -31,6 +31,7 @@ void SumHasBatch(MyCoroutine::Schedule& schedule, int& total) {
   schedule.BatchAdd(bid, SumBatch, std::ref(schedule), std::ref(total));
   schedule.BatchRun(bid);
 }
+}  // namespace
 
 void CoroutineLocalVariableFunc1(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocalVariable<int>& local_variable) {
