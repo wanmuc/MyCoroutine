@@ -46,6 +46,10 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   assert(co_mutex.hold_cid == slave_cid_);  // 必须是持有锁的从协程来释放锁。
   co_mutex.lock = false;  // 设置成false即可，后续由调度器schedule去激活那些被挂起的从协程
   co_mutex.hold_cid = kInvalidCid;
+  auto iter = find(co_mutex.suspend_cid_list.begin(), co_mutex.suspend_cid_list.end(), slave_cid_);
+  if (iter != co_mutex.suspend_cid_list.end()) {
+    co_mutex.suspend_cid_list.erase(iter);
+  }
 }
 
 void Schedule::CoMutexResume() {
