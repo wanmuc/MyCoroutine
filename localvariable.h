@@ -5,12 +5,12 @@
 
 namespace MyCoroutine {
 // 协程本地变量模版类封装
-template <typename Type> class CoroutineLocalVariable {
-public:
+template <typename Type>
+class CoroutineLocalVariable {
+ public:
   CoroutineLocalVariable(Schedule &schedule) : schedule_(schedule) {}
   static void free(void *data) {
-    if (data)
-      delete (Type *)data;
+    if (data) delete (Type *)data;
   }
   void Set(Type value) {
     Type *data = new Type(value);
@@ -26,7 +26,7 @@ public:
     return *(Type *)local_variable.data;
   }
 
-private:
+ private:
   Schedule &schedule_;
 };
-} // namespace MyCoroutine
+}  // namespace MyCoroutine

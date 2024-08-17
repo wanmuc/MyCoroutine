@@ -1,4 +1,5 @@
 #include "conditionvariable.h"
+
 #include "mycoroutine.h"
 
 namespace MyCoroutine {
@@ -7,9 +8,7 @@ void Schedule::CoCondInit(CoCond &co_cond) {
   conds_.insert(&co_cond);
 }
 
-void Schedule::CoCondClear(CoCond &co_cond) {
-  conds_.erase(&co_cond);
-}
+void Schedule::CoCondClear(CoCond &co_cond) { conds_.erase(&co_cond); }
 
 void Schedule::CoCondWait(CoCond &co_cond, std::function<bool()> pred) {
   while (not pred()) {
@@ -26,14 +25,12 @@ void Schedule::CoCondNotifyOne(CoCond &co_cond) {
   }
 }
 
-void Schedule::CoCondNotifyAll(CoCond &co_cond) {
-  co_cond.state = CondState::kNotifyAll;
-}
+void Schedule::CoCondNotifyAll(CoCond &co_cond) { co_cond.state = CondState::kNotifyAll; }
 
 void Schedule::CoCondResume() {
   assert(is_master_);
   for (auto *cond : conds_) {
-    if (cond->state == CondState::kNotifyNone) continue; // 没有通知，不需要互相等待的从协程
+    if (cond->state == CondState::kNotifyNone) continue;  // 没有通知，不需要互相等待的从协程
     // 通知了，但是没有挂起的从协程，也不需要唤醒，注意这里不调整通知的状态
     if (cond->suspend_cid_set.size() <= 0) continue;
     // 有挂起的协程才调整通知的状态
@@ -59,8 +56,6 @@ void ConditionVariable::NotifyOne() { schedule_.CoCondNotifyOne(co_cond_); }
 
 void ConditionVariable::NotifyAll() { schedule_.CoCondNotifyAll(co_cond_); }
 
-void ConditionVariable::Wait(std::function<bool()> pred) {
-  schedule_.CoCondWait(co_cond_, pred);
-}
+void ConditionVariable::Wait(std::function<bool()> pred) { schedule_.CoCondWait(co_cond_, pred); }
 
-} // namespace MyCoroutine
+}  // namespace MyCoroutine

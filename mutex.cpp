@@ -8,9 +8,7 @@ void Schedule::CoMutexInit(CoMutex& co_mutex) {
   mutexs_.insert(&co_mutex);
 }
 
-void Schedule::CoMutexClear(CoMutex &co_mutex) {
-  mutexs_.erase(&co_mutex);
-}
+void Schedule::CoMutexClear(CoMutex& co_mutex) { mutexs_.erase(&co_mutex); }
 
 void Schedule::CoMutexLock(CoMutex& co_mutex) {
   while (true) {
@@ -32,10 +30,10 @@ void Schedule::CoMutexLock(CoMutex& co_mutex) {
   }
 }
 
-bool Schedule::CoMutexTryLock(CoMutex &co_mutex) {
+bool Schedule::CoMutexTryLock(CoMutex& co_mutex) {
   assert(not is_master_);
   if (not co_mutex.lock) {
-    co_mutex.lock = true; // 加锁成功，直接返回
+    co_mutex.lock = true;  // 加锁成功，直接返回
     co_mutex.hold_cid = slave_cid_;
     return true;
   }
@@ -51,8 +49,8 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
 
 void Schedule::CoMutexResume() {
   assert(is_master_);
-  for (auto * mutex : mutexs_) {
-    if (mutex->lock) continue;  // 锁没释放，不需要唤醒其他从协程
+  for (auto* mutex : mutexs_) {
+    if (mutex->lock) continue;                          // 锁没释放，不需要唤醒其他从协程
     if (mutex->suspend_cid_list.size() <= 0) continue;  // 锁已经释放了，但是没有挂起的从协程，也不需要唤醒
     int32_t cid = mutex->suspend_cid_list.front();
     mutex->suspend_cid_list.pop_front();

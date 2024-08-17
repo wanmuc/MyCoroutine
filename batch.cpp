@@ -6,6 +6,7 @@ namespace MyCoroutine {
 
 int32_t Schedule::BatchCreate() {
   assert(not is_master_);
+  assert(max_concurrency_in_batch_ > 0);
   for (int32_t i = 0; i < kMaxBatchSize; i++) {
     if (batchs_[i]->state == State::kIdle) {
       batchs_[i]->state = State::kReady;
