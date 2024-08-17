@@ -53,15 +53,18 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
   }
 }
 
-void Schedule::CoMutexResume() {
+int Schedule::CoMutexResume() {
   assert(is_master_);
+  int count = 0;
   for (auto* mutex : mutexs_) {
     if (mutex->lock) continue;                          // 锁没释放，不需要唤醒其他从协程
     if (mutex->suspend_cid_list.size() <= 0) continue;  // 锁已经释放了，但是没有挂起的从协程，也不需要唤醒
     int32_t cid = mutex->suspend_cid_list.front();
     mutex->suspend_cid_list.pop_front();
     CoroutineResume(cid);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
+    count++;
   }
+  return count;
 }
 
 void Mutex::Lock() { schedule_.CoMutexLock(co_mutex_); }

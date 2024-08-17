@@ -67,7 +67,7 @@ class Schedule {
   void CoMutexLock(CoMutex &co_mutex);     // 锁定互斥锁
   void CoMutexUnLock(CoMutex &co_mutex);   // 解锁互斥锁
   bool CoMutexTryLock(CoMutex &co_mutex);  // 尝试锁定互斥锁
-  void CoMutexResume();
+  int CoMutexResume();
 
   void CoCondInit(CoCond &cond);   // 条件变量初始化
   void CoCondClear(CoCond &cond);  // 条件变量清理
@@ -75,7 +75,7 @@ class Schedule {
   void CoCondWait(CoCond &cond, std::function<bool()> pred);
   void CoCondNotifyOne(CoCond &cond);  // 条件变量kNotifyOne
   void CoCondNotifyAll(CoCond &cond);  // 条件变量kNotifyAll
-  void CoCondResume();
+  int CoCondResume();
 
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);     // 从协程的执行入口

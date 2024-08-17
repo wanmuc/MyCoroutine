@@ -84,5 +84,27 @@ TEST_CASE(CoCond_NotifyAll) {
 
 // 协程条件变量测试用例CondResume
 TEST_CASE(CoCond_CondResume) {
-  // TODO
+  list<int> queue;
+  MyCoroutine::CoCond co_cond;
+  MyCoroutine::Schedule schedule(1024);
+  schedule.CoCondInit(co_cond);
+  schedule.CoroutineCreate(CondNotifyAll, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait1, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait2, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait3, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+
+  schedule.CoroutineResume(0);
+  schedule.CoroutineResume(1);
+  schedule.CoroutineResume(2);
+  schedule.CoroutineResume(3);
+  int count = schedule.CoCondResume();
+  ASSERT_EQ(count, 0);
+  schedule.CoroutineResume(0);
+  count = schedule.CoCondResume();
+  ASSERT_EQ(count, 2);
+  schedule.CoroutineResume(0);
+  count = schedule.CoCondResume();
+  ASSERT_EQ(count, 1);
+  schedule.CoCondClear(co_cond);
+  ASSERT_EQ(queue.size(), 0);
 }
