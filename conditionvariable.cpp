@@ -17,6 +17,8 @@ void Schedule::CoCondWait(CoCond &co_cond, std::function<bool()> pred) {
     co_cond.suspend_cid_set.insert(slave_cid_);
     CoroutineYield();
   }
+  // 被唤醒后，就把当前从协程从阻塞集合中删除
+  co_cond.suspend_cid_set.erase(slave_cid_);
 }
 
 void Schedule::CoCondNotifyOne(CoCond &co_cond) {
