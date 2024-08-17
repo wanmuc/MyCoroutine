@@ -31,6 +31,7 @@ void Schedule::BatchRun(int32_t bid) {
 }
 
 bool Schedule::IsBatchDone(int32_t bid) {
+  assert(is_master_);
   assert(bid >= 0 && bid < kMaxBatchSize);
   assert(batchs_[bid]->state == State::kRun);  // 校验Batch的状态，必须是run的状态
   for (const auto& kv : batchs_[bid]->child_cid_2_finish) {
