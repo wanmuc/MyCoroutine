@@ -21,22 +21,39 @@ void CondNotifyOne(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond
   schedule.CoCondNotifyOne(co_cond);
 }
 
+void CondNotifyAll(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
+  schedule.CoroutineYield();
+  schedule.CoCondNotifyAll(co_cond);
+  queue.push_back(1);
+  queue.push_back(2);
+  schedule.CoroutineYield();
+  queue.push_back(3);
+  schedule.CoCondNotifyAll(co_cond);
+}
+
 void CondWait1(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
   schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
-  assert(queue.size() == 1);
+  assert(queue.size() >= 1);
   assert(queue.front() == 1);
   queue.pop_front();
 }
 
 void CondWait2(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
   schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
-  assert(queue.size() == 1);
+  assert(queue.size() >= 1);
   assert(queue.front() == 2);
+  queue.pop_front();
+}
+
+void CondWait3(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
+  schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  assert(queue.front() == 3);
   queue.pop_front();
 }
 }  // namespace
 
-// 协程条件变量测试用例1
+// 协程条件变量测试用例NotifyOne
 TEST_CASE(CoCond_NotifyOne) {
   list<int> queue;
   MyCoroutine::CoCond co_cond;
@@ -48,4 +65,24 @@ TEST_CASE(CoCond_NotifyOne) {
   schedule.Run();
   schedule.CoCondClear(co_cond);
   ASSERT_EQ(queue.size(), 0);
+}
+
+// 协程条件变量测试用例NotifyAll
+TEST_CASE(CoCond_NotifyAll) {
+  list<int> queue;
+  MyCoroutine::CoCond co_cond;
+  MyCoroutine::Schedule schedule(1024);
+  schedule.CoCondInit(co_cond);
+  schedule.CoroutineCreate(CondNotifyAll, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait1, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait2, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait3, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.Run();
+  schedule.CoCondClear(co_cond);
+  ASSERT_EQ(queue.size(), 0);
+}
+
+// 协程条件变量测试用例CondResume
+TEST_CASE(CoCond_CondResume) {
+  // TODO
 }
