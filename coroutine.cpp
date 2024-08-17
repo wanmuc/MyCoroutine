@@ -33,6 +33,7 @@ Schedule::Schedule(int32_t coroutine_count, int32_t max_concurrency_in_batch)
     : coroutine_count_(coroutine_count), max_concurrency_in_batch_(max_concurrency_in_batch) {
   assert(coroutine_count_ > 0 && coroutine_count_ <= kMaxCoroutineSize);
   assert((max_concurrency_in_batch_ + 1) * coroutine_count_ <= kMaxCoroutineSize);
+  coroutine_count_ = (max_concurrency_in_batch_ + 1) * coroutine_count_;
   for (int32_t i = 0; i < coroutine_count_; i++) {
     coroutines_[i] = new Coroutine;
     coroutines_[i]->cid = i;
