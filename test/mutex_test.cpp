@@ -30,9 +30,26 @@ void Mutex3(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_mutex, int
   value++;
   schedule.CoMutexUnLock(co_mutex);
 }
+
+void MutexTryLock1(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_mutex, int &value) {
+  bool lock = schedule.CoMutexTryLock(co_mutex);
+  assert(value == 0 && lock);
+  schedule.CoroutineYield();
+  value++;
+  schedule.CoMutexUnLock(co_mutex);
+}
+
+void MutexTryLock2(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_mutex, int &value) {
+  bool lock = schedule.CoMutexTryLock(co_mutex);
+  assert(not lock);
+  if (not lock) {
+    return;
+  }
+  assert(0);
+}
 }  // namespace
 
-// 协程互斥量
+// 协程互斥量测试用例1
 TEST_CASE(CoMutex_LockAndUnLock) {
   int value = 0;
   MyCoroutine::CoMutex co_mutex;
@@ -44,4 +61,17 @@ TEST_CASE(CoMutex_LockAndUnLock) {
   schedule.Run();
   schedule.CoMutexClear(co_mutex);
   ASSERT_EQ(value, 3);
+}
+
+// 协程互斥量测试用例2
+TEST_CASE(CoMutex_TryLock) {
+  int value = 0;
+  MyCoroutine::CoMutex co_mutex;
+  MyCoroutine::Schedule schedule(1024);
+  schedule.CoMutexInit(co_mutex);
+  schedule.CoroutineCreate(MutexTryLock1, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.CoroutineCreate(MutexTryLock2, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.Run();
+  schedule.CoMutexClear(co_mutex);
+  ASSERT_EQ(value, 1);
 }
