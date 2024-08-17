@@ -9,7 +9,7 @@ class WaitGroup {
   WaitGroup(Schedule &schedule) : schedule_(schedule) { bid_ = schedule_.BatchCreate(); }
   template <typename Function, typename... Args>
   bool Add(Function &&func, Args &&...args) {
-    return scheule_.BatchAdd(bid_, std::forward<Function>(func), std::forward<Args>(args)...);
+    return schedule_.BatchAdd(bid_, std::forward<Function>(func), std::forward<Args>(args)...);
   }
   void Wait() { schedule_.BatchRun(bid_); }
 
