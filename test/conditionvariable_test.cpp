@@ -22,14 +22,14 @@ void CondNotifyOne(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond
 }
 
 void CondWait1(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
-  schedule.CoCondWait(co_cond, []() { return queue.size() > 0; });
+  schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
   assert(queue.size() == 1);
   assert(queue.front() == 1);
   queue.pop_front();
 }
 
 void CondWait2(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
-  schedule.CoCondWait(co_cond, []() { return queue.size() > 0; });
+  schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
   assert(queue.size() == 1);
   assert(queue.front() == 2);
   queue.pop_front();
