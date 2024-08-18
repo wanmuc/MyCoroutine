@@ -55,7 +55,6 @@ void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
 
 void Schedule::CoMutexResume() {
   assert(is_master_);
-  int count = 0;
   for (auto* mutex : mutexs_) {
     if (mutex->lock) continue;                          // 锁没释放，不需要唤醒其他从协程
     if (mutex->suspend_cid_list.size() <= 0) continue;  // 锁已经释放了，但是没有挂起的从协程，也不需要唤醒
