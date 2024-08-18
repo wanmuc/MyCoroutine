@@ -51,6 +51,24 @@ void CondWait3(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, li
   assert(queue.front() == 3);
   queue.pop_front();
 }
+
+void CondWait4(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
+  schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  queue.pop_front();
+}
+
+void CondWait5(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
+  schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  queue.pop_front();
+}
+
+void CondWait6(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, list<int> &queue) {
+  schedule.CoCondWait(co_cond, [&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  queue.pop_front();
+}
 }  // namespace
 
 // 协程条件变量测试用例NotifyOne
@@ -89,9 +107,9 @@ TEST_CASE(CoCond_CondResume) {
   MyCoroutine::Schedule schedule(1024);
   schedule.CoCondInit(co_cond);
   schedule.CoroutineCreate(CondNotifyAll, std::ref(schedule), std::ref(co_cond), std::ref(queue));
-  schedule.CoroutineCreate(CondWait1, std::ref(schedule), std::ref(co_cond), std::ref(queue));
-  schedule.CoroutineCreate(CondWait2, std::ref(schedule), std::ref(co_cond), std::ref(queue));
-  schedule.CoroutineCreate(CondWait3, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait4, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait5, std::ref(schedule), std::ref(co_cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWait6, std::ref(schedule), std::ref(co_cond), std::ref(queue));
 
   schedule.CoroutineResume(0);
   schedule.CoroutineResume(1);
