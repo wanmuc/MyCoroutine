@@ -1,3 +1,5 @@
+#include "conditionvariable.h"
+
 #include <assert.h>
 
 #include <iostream>
