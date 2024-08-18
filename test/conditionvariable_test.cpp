@@ -69,6 +69,33 @@ void CondWait6(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, li
   assert(queue.size() >= 1);
   queue.pop_front();
 }
+
+void CondNotifyOneWarp(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariabe &cond, list<int> &queue) {
+  for (int i = 0; i < 10; i++) {
+    schedule.CoroutineYield();
+  }
+  queue.push_back(1);
+  cond.NotifyOne();
+  for (int i = 0; i < 10; i++) {
+    schedule.CoroutineYield();
+  }
+  queue.push_back(2);
+  cond.NotifyOne();
+}
+
+void CondWaitWrap1(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
+  cond.Wait([&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  assert(queue.front() == 1);
+  queue.pop_front();
+}
+
+void CondWaitWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
+  cond.Wait([&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  assert(queue.front() == 2);
+  queue.pop_front();
+}
 }  // namespace
 
 // 协程条件变量测试用例-NotifyOne
@@ -82,6 +109,18 @@ TEST_CASE(CoCond_NotifyOne) {
   schedule.CoroutineCreate(CondWait2, std::ref(schedule), std::ref(co_cond), std::ref(queue));
   schedule.Run();
   schedule.CoCondClear(co_cond);
+  ASSERT_EQ(queue.size(), 0);
+}
+
+// 协程条件变量测试用例-NotifyOneWarp
+TEST_CASE(CoCond_NotifyOneWarp) {
+  list<int> queue;
+  MyCoroutine::Schedule schedule(1024);
+  MyCoroutine::ConditionVariable cond(schedule);
+  schedule.CoroutineCreate(CondNotifyOneWarp, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWaitWrap1, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWaitWrap2, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.Run();
   ASSERT_EQ(queue.size(), 0);
 }
 
