@@ -31,6 +31,25 @@ void Mutex3(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_mutex, int
   schedule.CoMutexUnLock(co_mutex);
 }
 
+void MutexWrap1(MyCoroutine::Schedule &schedule, MyCoroutine::Mutex &mutex, int &value) {
+  MyCoroutine::LockGuard lock_guard(mutex);
+  assert(value == 0);
+  schedule.CoroutineYield();
+  value++;
+}
+void MutexWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::Mutex &mutex, int &value) {
+  MyCoroutine::LockGuard lock_guard(mutex);
+  assert(value == 1);
+  schedule.CoroutineYield();
+  value++;
+}
+void MutexWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::Mutex &mutex, int &value) {
+  MyCoroutine::LockGuard lock_guard(mutex);
+  assert(value == 2);
+  schedule.CoroutineYield();
+  value++;
+}
+
 void MutexTryLock1(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_mutex, int &value) {
   bool lock = schedule.CoMutexTryLock(co_mutex);
   assert(value == 0 && lock);
@@ -60,6 +79,18 @@ TEST_CASE(CoMutex_LockAndUnLock) {
   schedule.CoroutineCreate(Mutex3, std::ref(schedule), std::ref(co_mutex), std::ref(value));
   schedule.Run();
   schedule.CoMutexClear(co_mutex);
+  ASSERT_EQ(value, 3);
+}
+
+// 协程互斥量测试用例-LockAndUnLockWrap
+TEST_CASE(CoMutex_LockAndUnLockWrap) {
+  int value = 0;
+  MyCoroutine::Schedule schedule(1024);
+  MyCoroutine::Mutex(schedule);
+  schedule.CoroutineCreate(MutexWrap1, std::ref(schedule), std::ref(Mutex), std::ref(value));
+  schedule.CoroutineCreate(MutexWrap2, std::ref(schedule), std::ref(Mutex), std::ref(value));
+  schedule.CoroutineCreate(MutexWrap3, std::ref(schedule), std::ref(Mutex), std::ref(value));
+  schedule.Run();
   ASSERT_EQ(value, 3);
 }
 
