@@ -5,6 +5,8 @@
 #include "UTestCore.h"
 #include "mutex.h"
 #include "mycoroutine.h"
+#include "waitgroup.h"
+
 using namespace std;
 
 namespace {
