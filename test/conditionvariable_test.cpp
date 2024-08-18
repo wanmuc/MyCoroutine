@@ -70,7 +70,7 @@ void CondWait6(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, li
   queue.pop_front();
 }
 
-void CondNotifyOneWarp(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariabe &cond, list<int> &queue) {
+void CondNotifyOneWarp(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
   for (int i = 0; i < 10; i++) {
     schedule.CoroutineYield();
   }
