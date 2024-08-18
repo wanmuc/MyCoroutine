@@ -90,11 +90,11 @@ TEST_CASE(CoMutex_MutexResume) {
   schedule.CoroutineResume(2);
   int count = schedule.CoMutexResume();  // cid = 0获取到锁
   ASSERT_EQ(count, 2);
-  schedule.CoroutineResume(0);           // cid = 0释放锁
-  int count = schedule.CoMutexResume();  // cid = 1获取到锁
+  schedule.CoroutineResume(0);       // cid = 0释放锁
+  count = schedule.CoMutexResume();  // cid = 1获取到锁
   ASSERT_EQ(count, 2);
-  schedule.CoroutineResume(1);           // cid = 1释放锁
-  int count = schedule.CoMutexResume();  // cid = 2获取到锁
+  schedule.CoroutineResume(1);       // cid = 1释放锁
+  count = schedule.CoMutexResume();  // cid = 2获取到锁
   ASSERT_EQ(count, 1);
   schedule.CoMutexClear(co_mutex);
   ASSERT_EQ(value, 1);
