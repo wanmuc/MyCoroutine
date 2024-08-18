@@ -67,7 +67,7 @@ class Schedule {
   void CoMutexLock(CoMutex &co_mutex);     // 锁定互斥锁
   void CoMutexUnLock(CoMutex &co_mutex);   // 解锁互斥锁
   bool CoMutexTryLock(CoMutex &co_mutex);  // 尝试锁定互斥锁
-  int CoMutexResume();
+  void CoMutexResume();
 
   void CoCondInit(CoCond &cond);   // 条件变量初始化
   void CoCondClear(CoCond &cond);  // 条件变量清理
