@@ -25,7 +25,7 @@ TEST_CASE(Batch_All) {
   MyCoroutine::Schedule schedule(1024, 2);
   schedule.CoroutineCreate(BatchParent, std::ref(schedule), std::ref(value));
   schedule.CoroutineResume(0);
-  schedule.CoroutineResume4BatchStart();
+  schedule.CoroutineResume4BatchStart(0);
   schedule.CoroutineResume4BatchFinish();
   ASSERT_EQ(value, 2);
 }
