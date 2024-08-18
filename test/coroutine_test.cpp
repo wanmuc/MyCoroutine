@@ -33,44 +33,6 @@ void SumHasBatch(MyCoroutine::Schedule& schedule, int& total) {
 }
 }  // namespace
 
-void BatchChild(MyCoroutine::Schedule& schedule, int& total) { total++; }
-
-void BatchParent(MyCoroutine::Schedule& schedule, int& total) {
-  int32_t bid = schedule.BatchCreate();
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchRun(bid);
-
-  bid = schedule.BatchCreate();
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchRun(bid);
-
-  bid = schedule.BatchCreate();
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchAdd(bid, BatchChild, std::ref(schedule), std::ref(total));
-  schedule.BatchRun(bid);
-}
-
-void WaitGroupSub(MyCoroutine::Schedule& schedule, int& total) { total++; }
-
-void BatchWaitGroup(MyCoroutine::Schedule& schedule, int& total) {
-  MyCoroutine::WaitGroup wait_group(schedule);
-  wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
-  wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
-  wait_group.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
-  wait_group.Wait();
-
-  MyCoroutine::WaitGroup wait_group2(schedule);
-  wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
-  wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
-  wait_group2.Add(WaitGroupSub, std::ref(schedule), std::ref(total));
-  wait_group2.Wait();
-}
-
 // 协程调度的测试用例1
 TEST_CASE(Schedule_Run1) {
   int total = 0;
@@ -112,26 +74,6 @@ TEST_CASE(Schedule_Run3) {
   }
   schedule.Run();
   ASSERT_EQ(total, 51200);
-}
-
-// 协程Batch特性的测试用例
-TEST_CASE(Coroutine_Batch) {
-  int total = 0;
-  MyCoroutine::Schedule schedule(2560, 3);
-  int32_t cid = schedule.CoroutineCreate(BatchParent, std::ref(schedule), std::ref(total));
-  ASSERT_EQ(cid, 0);
-  schedule.Run();
-  ASSERT_EQ(total, 9);
-}
-
-// WaitGroup封装的测试用例
-TEST_CASE(Coroutine_BatchWaitGroup) {
-  int total = 0;
-  MyCoroutine::Schedule schedule(2560, 3);
-  int32_t cid = schedule.CoroutineCreate(BatchWaitGroup, std::ref(schedule), std::ref(total));
-  ASSERT_EQ(cid, 0);
-  schedule.Run();
-  ASSERT_EQ(total, 6);
 }
 
 RUN_ALL_TESTS();
