@@ -86,10 +86,10 @@ TEST_CASE(CoMutex_LockAndUnLock) {
 TEST_CASE(CoMutex_LockAndUnLockWrap) {
   int value = 0;
   MyCoroutine::Schedule schedule(1024);
-  MyCoroutine::Mutex(schedule);
-  schedule.CoroutineCreate(MutexWrap1, std::ref(schedule), std::ref(Mutex), std::ref(value));
-  schedule.CoroutineCreate(MutexWrap2, std::ref(schedule), std::ref(Mutex), std::ref(value));
-  schedule.CoroutineCreate(MutexWrap3, std::ref(schedule), std::ref(Mutex), std::ref(value));
+  MyCoroutine::Mutex mutex(schedule);
+  schedule.CoroutineCreate(MutexWrap1, std::ref(schedule), std::ref(mutex), std::ref(value));
+  schedule.CoroutineCreate(MutexWrap2, std::ref(schedule), std::ref(mutex), std::ref(value));
+  schedule.CoroutineCreate(MutexWrap3, std::ref(schedule), std::ref(mutex), std::ref(value));
   schedule.Run();
   ASSERT_EQ(value, 3);
 }
