@@ -99,6 +99,13 @@ void CondWaitWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariab
   queue.pop_front();
 }
 
+void CondWaitWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
+  cond.Wait([&queue]() { return queue.size() > 0; });
+  assert(queue.size() >= 1);
+  assert(queue.front() == 3);
+  queue.pop_front();
+}
+
 void CondNotifyAllWarp(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
   schedule.CoroutineYield();
   cond.NotifyAll();
@@ -136,18 +143,6 @@ TEST_CASE(CoCond_NotifyOneWarp) {
   ASSERT_EQ(queue.size(), 0);
 }
 
-// 协程条件变量测试用例-NotifyOneWarp
-TEST_CASE(CoCond_NotifyAllWarp) {
-  list<int> queue;
-  MyCoroutine::Schedule schedule(1024);
-  MyCoroutine::ConditionVariable cond(schedule);
-  schedule.CoroutineCreate(CondNotifyAllWarp, std::ref(schedule), std::ref(cond), std::ref(queue));
-  schedule.CoroutineCreate(CondWaitWrap1, std::ref(schedule), std::ref(cond), std::ref(queue));
-  schedule.CoroutineCreate(CondWaitWrap2, std::ref(schedule), std::ref(cond), std::ref(queue));
-  schedule.Run();
-  ASSERT_EQ(queue.size(), 0);
-}
-
 // 协程条件变量测试用例-NotifyAll
 TEST_CASE(CoCond_NotifyAll) {
   list<int> queue;
@@ -160,6 +155,19 @@ TEST_CASE(CoCond_NotifyAll) {
   schedule.CoroutineCreate(CondWait3, std::ref(schedule), std::ref(co_cond), std::ref(queue));
   schedule.Run();
   schedule.CoCondClear(co_cond);
+  ASSERT_EQ(queue.size(), 0);
+}
+
+// 协程条件变量测试用例-NotifyOneWarp
+TEST_CASE(CoCond_NotifyAllWarp) {
+  list<int> queue;
+  MyCoroutine::Schedule schedule(1024);
+  MyCoroutine::ConditionVariable cond(schedule);
+  schedule.CoroutineCreate(CondNotifyAllWarp, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWaitWrap1, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWaitWrap2, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.CoroutineCreate(CondWaitWrap3, std::ref(schedule), std::ref(cond), std::ref(queue));
+  schedule.Run();
   ASSERT_EQ(queue.size(), 0);
 }
 
