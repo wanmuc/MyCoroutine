@@ -59,6 +59,12 @@ TEST_CASE(Batch_Origin) {
   schedule.CoroutineResume(0);
   schedule.CoroutineResume4BatchStart(0);
   schedule.CoroutineResume4BatchFinish();
+  schedule.CoroutineResume(0);
+  schedule.CoroutineResume4BatchStart(0);
+  schedule.CoroutineResume4BatchFinish();
+  schedule.CoroutineResume(0);
+  schedule.CoroutineResume4BatchStart(0);
+  schedule.CoroutineResume4BatchFinish();
   ASSERT_EQ(value, 9);
 }
 
