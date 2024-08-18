@@ -95,6 +95,7 @@ TEST_CASE(CoMutex_MutexResume) {
 
   schedule.CoroutineResume(1);  // cid = 1释放锁
   schedule.CoMutexResume();     // cid = 2获取到锁
+  schedule.CoroutineResume(2);  // cid = 2释放锁
 
   schedule.CoMutexClear(co_mutex);
   ASSERT_EQ(value, 3);
