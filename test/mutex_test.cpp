@@ -49,7 +49,7 @@ void MutexTryLock2(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_mut
 }
 }  // namespace
 
-// 协程互斥量测试用例1
+// 协程互斥量测试用例-LockAndUnLock
 TEST_CASE(CoMutex_LockAndUnLock) {
   int value = 0;
   MyCoroutine::CoMutex co_mutex;
@@ -63,7 +63,7 @@ TEST_CASE(CoMutex_LockAndUnLock) {
   ASSERT_EQ(value, 3);
 }
 
-// 协程互斥量测试用例2
+// 协程互斥量测试用例-TryLock
 TEST_CASE(CoMutex_TryLock) {
   int value = 0;
   MyCoroutine::CoMutex co_mutex;
@@ -72,6 +72,30 @@ TEST_CASE(CoMutex_TryLock) {
   schedule.CoroutineCreate(MutexTryLock1, std::ref(schedule), std::ref(co_mutex), std::ref(value));
   schedule.CoroutineCreate(MutexTryLock2, std::ref(schedule), std::ref(co_mutex), std::ref(value));
   schedule.Run();
+  schedule.CoMutexClear(co_mutex);
+  ASSERT_EQ(value, 1);
+}
+
+// 协程互斥量测试用例-MutexResume
+TEST_CASE(CoMutex_MutexResume) {
+  int value = 0;
+  MyCoroutine::CoMutex co_mutex;
+  MyCoroutine::Schedule schedule(1024);
+  schedule.CoMutexInit(co_mutex);
+  schedule.CoroutineCreate(Mutex1, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.CoroutineCreate(Mutex2, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.CoroutineCreate(Mutex3, std::ref(schedule), std::ref(co_mutex), std::ref(value));
+  schedule.CoroutineResume(0);
+  schedule.CoroutineResume(1);
+  schedule.CoroutineResume(2);
+  int count = schedule.CoMutexResume();  // cid = 0获取到锁
+  ASSERT_EQ(count, 2);
+  schedule.CoroutineResume(0);           // cid = 0释放锁
+  int count = schedule.CoMutexResume();  // cid = 1获取到锁
+  ASSERT_EQ(count, 2);
+  schedule.CoroutineResume(1);           // cid = 1释放锁
+  int count = schedule.CoMutexResume();  // cid = 2获取到锁
+  ASSERT_EQ(count, 1);
   schedule.CoMutexClear(co_mutex);
   ASSERT_EQ(value, 1);
 }

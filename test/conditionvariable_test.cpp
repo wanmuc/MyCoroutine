@@ -71,7 +71,7 @@ void CondWait6(MyCoroutine::Schedule &schedule, MyCoroutine::CoCond &co_cond, li
 }
 }  // namespace
 
-// 协程条件变量测试用例NotifyOne
+// 协程条件变量测试用例-NotifyOne
 TEST_CASE(CoCond_NotifyOne) {
   list<int> queue;
   MyCoroutine::CoCond co_cond;
@@ -85,7 +85,7 @@ TEST_CASE(CoCond_NotifyOne) {
   ASSERT_EQ(queue.size(), 0);
 }
 
-// 协程条件变量测试用例NotifyAll
+// 协程条件变量测试用例-NotifyAll
 TEST_CASE(CoCond_NotifyAll) {
   list<int> queue;
   MyCoroutine::CoCond co_cond;
@@ -100,7 +100,7 @@ TEST_CASE(CoCond_NotifyAll) {
   ASSERT_EQ(queue.size(), 0);
 }
 
-// 协程条件变量测试用例CondResume
+// 协程条件变量测试用例-CondResume
 TEST_CASE(CoCond_CondResume) {
   list<int> queue;
   MyCoroutine::CoCond co_cond;
