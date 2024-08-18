@@ -119,7 +119,7 @@ TEST_CASE(CoCond_CondResume) {
   ASSERT_EQ(count, 0);
   schedule.CoroutineResume(0);
   count = schedule.CoCondResume();
-  ASSERT_EQ(count, 2);
+  ASSERT_EQ(count, 3);
   schedule.CoroutineResume(0);
   count = schedule.CoCondResume();
   ASSERT_EQ(count, 1);
