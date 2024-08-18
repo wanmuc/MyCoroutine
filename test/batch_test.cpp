@@ -66,7 +66,7 @@ TEST_CASE(Batch_Origin) {
 TEST_CASE(Batch_WaitGroup) {
   int total = 0;
   MyCoroutine::Schedule schedule(2560, 3);
-  int32_t cid = schedule.CoroutineCreate(BatchWaitGroup, std::ref(schedule), std::ref(total));
+  schedule.CoroutineCreate(BatchWaitGroup, std::ref(schedule), std::ref(total));
   schedule.Run();
   ASSERT_EQ(total, 6);
 }
