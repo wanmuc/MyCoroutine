@@ -99,7 +99,7 @@ void CondWaitWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariab
   queue.pop_front();
 }
 
-void CondNotifyAllWrap(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
+void CondNotifyAllWarp(MyCoroutine::Schedule &schedule, MyCoroutine::ConditionVariable &cond, list<int> &queue) {
   schedule.CoroutineYield();
   cond.NotifyAll();
   queue.push_back(1);
