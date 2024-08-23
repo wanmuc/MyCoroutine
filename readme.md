@@ -6,7 +6,48 @@
 
 # 目录结构说明
 
+本仓库的目录结构说明如下。
+```
+.
+├── batch.cpp 
+├── common.h
+├── conditionvariable.cpp
+├── conditionvariable.h
+├── coroutine.cpp
+├── demo
+│   ├── batchrun
+│   ├── conditionvariable
+│   ├── helloworld
+│   ├── localvariable
+│   └── mutex
+├── localvariable.cpp
+├── localvariable.h
+├── mp_account.png
+├── mutex.cpp
+├── mutex.h
+├── mycoroutine.h
+├── readme.md
+├── test
+│   ├── batch_test.cpp
+│   ├── conditionvariable_test.cpp
+│   ├── coroutine_test.cpp
+│   ├── localvariable_test.cpp
+│   ├── makefile
+│   ├── mutex_test.cpp
+│   └── UTestCore.h
+└── waitgroup.h
+```
 
+- batch.cpp：批量执行的实现
+- common.h：公共结构体、枚举、常量的定义
+- conditionvariable.h、conditionvariable.cpp：协程条件变量的实现
+- coroutine.cpp：协程基础API的实现
+- demo目录：所有示例程序的目录，每个子目录对应一个示例程序
+- localvariable.h、localvariable.cpp：协程本地变量的实现
+- mutex.h、mutex.cpp：协程互斥量的实现
+- mycoroutine.h：协程库主要接口的声明
+- test目录：单元测试代码目录，里面有每个特性的测试代码
+- waitgroup.h：批量执行的WaitGroup封装
 
 # 协程调度模型
 
@@ -67,7 +108,8 @@ int main() {
   return 0;
 }
 ```
-本仓库的代码都是使用make命令来编译，采用的是通用的makefile脚本文件。
+
+本仓库的代码都是使用make命令来编译，采用的是通用的makefile编译脚本。
 
 更多的示例代码，详见demo子目录内容，demo目录下的每个子目录都是一个单独的示例程序。
 
