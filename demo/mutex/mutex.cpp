@@ -24,7 +24,7 @@ void Mutex3(Schedule &schedule, Mutex& mutex, int& sum) {
 int main() {
   // 创建一个协程调度对象，并自动生成大小为1024的协程池
   Schedule schedule(1024);
-  Mutex mutex;  // 互斥量在唤醒被阻塞的从协程，是按先进先出的策略
+  Mutex mutex(schedule);  // 互斥量在唤醒被阻塞的从协程，是按先进先出的策略
   int sum = 0;
   schedule.CoroutineCreate(Mutex1, ref(schedule), ref(mutex), ref(sum));
   schedule.CoroutineCreate(Mutex2, ref(schedule), ref(mutex), ref(sum));
