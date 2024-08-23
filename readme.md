@@ -49,6 +49,7 @@ void HelloWorld(MyCoroutine::Schedule &schedule) {
 }
 
 int main() {
+  // 创建一个协程调度对象，并自动生成大小为1024的协程池
   MyCoroutine::Schedule schedule(1024);
   // 创建一个从协程，并手动调度
   {
@@ -59,7 +60,7 @@ int main() {
   // 创建一个从协程，并自行调度
   {
     schedule.CoroutineCreate(HelloWorld, std::ref(schedule));
-    schedule.Run(); // 协程库，自行调度协程的执行
+    schedule.Run();  // Run函数完成从协程的自行调度，直到所有的从协程都执行完
   }
   return 0;
 }

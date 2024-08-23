@@ -5,3 +5,8 @@
 # Executables
 MyCoroutine
 CoroutineTest
+batchrun
+conditionvariable
+helloworld
+localvariable
+mutex
