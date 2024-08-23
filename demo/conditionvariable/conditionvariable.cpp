@@ -5,9 +5,9 @@ using namespace std;
 using namespace MyCoroutine;
 
 void Consumer(Schedule &schedule, ConditionVariable &cond, list<int32_t> &q,
-               int32_t &sum) {
+              int32_t &sum) {
   while (sum != 10) {
-    cond.Wait([&q](){return q.size() > 0; })
+    cond.Wait([&q]() { return q.size() > 0; });
     sum += q.front();
     q.pop_front();
   }
