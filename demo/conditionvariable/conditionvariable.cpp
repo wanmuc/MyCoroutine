@@ -32,5 +32,6 @@ int main() {
   schedule.CoroutineCreate(Producer, ref(schedule), ref(cond), ref(q));
   schedule.CoroutineCreate(Consumer, ref(schedule), ref(cond), ref(q), ref(sum));
   schedule.Run(); // Run函数完成从协程的自行调度，直到所有的从协程都执行完
+  cout << "sum = " << sum << endl;
   return 0;
 }
