@@ -1,6 +1,8 @@
 #include "mycoroutine.h"
 #include <iostream>
+
 using namespace std;
+using namespace MyCoroutine;
 
 void HelloWorld(Schedule &schedule) {
   cout << "hello ";
