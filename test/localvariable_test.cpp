@@ -59,7 +59,7 @@ TEST_CASE(Coroutine_LocalVariable) {
 
 // 协程本地变量的测试用例
 TEST_CASE(Coroutine_LocalVariableWithBatch) {
-  MyCoroutine::Schedule schedule(10240, 2);
+  MyCoroutine::Schedule schedule(1024, 2);
   MyCoroutine::CoroutineLocalVariable<int> local_variable(schedule);
   schedule.CoroutineCreate(CoroutineLocalVariableWithBatch, std::ref(schedule), std::ref(local_variable));
   schedule.Run();
