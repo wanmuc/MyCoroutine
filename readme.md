@@ -4,6 +4,10 @@
 
 注意：因为本协程库的实现依赖Linux平台下的ucontext库，所以本协程库只支持Linux平台，不支持跨平台。
 
+# 目录结构说明
+
+
+
 # 协程调度模型
 
 本协程库使用的是1对1的调度模型，也就是说一个协程只会在一个线程上被调度。
@@ -30,6 +34,39 @@
 
 
 # 快速开始
+
+下面展示了如何使用本协程库来实现hello world的打印。
+
+```C++
+#include "mycoroutine.h"
+#include <iostream>
+using namespace std;
+
+void HelloWorld(MyCoroutine::Schedule &schedule) {
+  cout << "hello ";
+  schedule.CoroutineYield();
+  cout << "world" << endl;
+}
+
+int main() {
+  MyCoroutine::Schedule schedule(1024);
+  // 创建一个从协程，并手动调度
+  {
+    int32_t cid = schedule.CoroutineCreate(HelloWorld, std::ref(schedule));
+    schedule.CoroutineResume(cid);
+    schedule.CoroutineResume(cid);
+  }
+  // 创建一个从协程，并自行调度
+  {
+    schedule.CoroutineCreate(HelloWorld, std::ref(schedule));
+    schedule.Run(); // 协程库，自行调度协程的执行
+  }
+  return 0;
+}
+```
+本仓库的代码都是使用make命令来编译，采用的是通用的makefile脚本文件。
+
+更多的示例代码，详见demo子目录内容，demo目录下的每个子目录都是一个单独的示例程序。
 
 
 # 微信公众号
