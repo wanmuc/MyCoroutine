@@ -123,7 +123,6 @@ void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
     routine->stack = new uint8_t[stack_size_];
   }
   getcontext(&routine->ctx);
-  routine->ctx.uc_stack.ss_flags = 0;
   routine->ctx.uc_stack.ss_sp = routine->stack;
   routine->ctx.uc_stack.ss_size = stack_size_;
   routine->ctx.uc_link = &main_;
