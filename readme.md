@@ -1,8 +1,8 @@
 # MyCoroutine
 
-> MyCoroutine是使用C++11编写的协程库。
+> MyCoroutine是使用C++11编写的Linux平台下的协程库。
 
-注意：因为本协程库的实现依赖Linux平台下的ucontext库，所以本协程库只支持Linux平台，不支持跨平台。
+注意：因为本协程库的实现依赖Linux平台下的三个库函数，getcontext，makecontext和swapcontext，所以本协程库只支持Linux平台，不支持跨平台。
 
 # 目录结构说明
 
