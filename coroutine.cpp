@@ -116,7 +116,7 @@ void Schedule::CoroutineResume(int32_t cid) {
   slave_cid_ = kInvalidCid;
 }
 
-void Schedule::CoroutineInit(Coroutine* routine, std::function<void()> entry) {
+void Schedule::CoroutineInit(Coroutine* routine, function<void()> entry) {
   routine->entry = entry;
   routine->state = State::kReady;
   if (nullptr == routine->stack) {
