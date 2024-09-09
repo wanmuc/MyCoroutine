@@ -72,14 +72,14 @@ class Schedule {
   void CoCondInit(CoCond &cond);   // 条件变量初始化
   void CoCondClear(CoCond &cond);  // 条件变量清理
   // 条件变量wait，支持设置超时时间的版本，需要配合Reactor模型的定时器功能来实现
-  void CoCondWait(CoCond &cond, std::function<bool()> pred);
+  void CoCondWait(CoCond &cond, function<bool()> pred);
   void CoCondNotifyOne(CoCond &cond);  // 条件变量kNotifyOne
   void CoCondNotifyAll(CoCond &cond);  // 条件变量kNotifyAll
   int CoCondResume();
 
  private:
-  static void CoroutineRun(Schedule *schedule, Coroutine *routine);     // 从协程的执行入口
-  void CoroutineInit(Coroutine *routine, std::function<void()> entry);  // 从协程的初始化
+  static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
+  void CoroutineInit(Coroutine *routine, function<void()> entry);    // 从协程的初始化
 
  private:
   ucontext_t main_;                           // 保存主协程的上下文
