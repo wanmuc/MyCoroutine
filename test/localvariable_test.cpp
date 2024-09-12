@@ -15,26 +15,26 @@ void CoroutineLocalFunc1(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocal<int>& local_variable) {
   local_variable.Set(100);
   schedule.CoroutineYield();
-  assert(local_variable.Get() == 100);
+  assert(local_variable == 100);
 }
 
 void CoroutineLocalFunc2(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocal<int>& local_variable) {
   local_variable.Set(200);
   schedule.CoroutineYield();
-  assert(local_variable.Get() == 200);
+  assert(local_variable == 200);
 }
 
 void CoroutineLocalFunc3(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocal<int>& local_variable) {
   local_variable.Set(300);
   schedule.CoroutineYield();
-  assert(local_variable.Get() == 300);
+  assert(local_variable == 300);
 }
 
 void CoroutineLocalWithBatchChild(MyCoroutine::Schedule& schedule,
                                           MyCoroutine::CoroutineLocal<int>& local_variable) {
-  assert(local_variable.Get() == 100);
+  assert(local_variable == 100);
 }
 
 void CoroutineLocalWithBatch(MyCoroutine::Schedule& schedule,

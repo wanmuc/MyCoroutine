@@ -19,15 +19,12 @@ class CoroutineLocal {
     local_variable.free = free;
     schedule_.LocalVariableSet(this, local_variable);
   }
-  Type &Get() {
+
+  operator Type() { // 重载类型转换操作符
     MyCoroutine::LocalVariable local_variable;
     bool result = schedule_.LocalVariableGet(this, local_variable);
     assert(result == true);
     return *(Type *)local_variable.data;
-  }
-
-  operator Type() const { // 重载类型转换操作符
-    return Get();
   }
 
  private:
