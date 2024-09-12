@@ -20,11 +20,12 @@ public:
     assert(result == true);
     return *(Type *)local_variable.data;
   }
-
-  operator Type() { // 重载类型转换操作符
+  // 重载类型转换操作符，实现协程本地变量直接给Type类型的变量赋值的功能
+  operator Type() {
     return Get();
   }
-  CoroutineLocal &operator=(const Type &value) {  // 重载赋值操作符
+  // 重载赋值操作符，实现Type类型的变量直接给协程本地变量赋值的功能
+  CoroutineLocal &operator=(const Type &value) {
     Set(value);
     return *this;
   }
