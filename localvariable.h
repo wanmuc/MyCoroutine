@@ -5,13 +5,31 @@
 
 namespace MyCoroutine {
 // 协程本地变量模版类封装
-template <typename Type>
+template <typename Type> 
 class CoroutineLocal {
- public:
+public:
   CoroutineLocal(Schedule &schedule) : schedule_(schedule) {}
   static void free(void *data) {
-    if (data) delete (Type *)data;
+    if (data)
+      delete (Type *)data;
   }
+
+  Type &Get() {
+    MyCoroutine::LocalVariable local_variable;
+    bool result = schedule_.LocalVariableGet(this, local_variable);
+    assert(result == true);
+    return *(Type *)local_variable.data;
+  }
+
+  operator Type() { // 重载类型转换操作符
+    return Get();
+  }
+  CoroutineLocal &operator=(const Type &value) {  // 重载赋值操作符
+    Set(value);
+    return *this;
+  }
+
+private:
   void Set(Type value) {
     Type *data = new Type(value);
     MyCoroutine::LocalVariable local_variable;
@@ -20,14 +38,7 @@ class CoroutineLocal {
     schedule_.LocalVariableSet(this, local_variable);
   }
 
-  operator Type() { // 重载类型转换操作符
-    MyCoroutine::LocalVariable local_variable;
-    bool result = schedule_.LocalVariableGet(this, local_variable);
-    assert(result == true);
-    return *(Type *)local_variable.data;
-  }
-
- private:
+private:
   Schedule &schedule_;
 };
 }  // namespace MyCoroutine

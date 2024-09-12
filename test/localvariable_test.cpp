@@ -13,21 +13,22 @@ using namespace std;
 namespace {
 void CoroutineLocalFunc1(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocal<int>& local_variable) {
-  local_variable.Set(100);
+  local_variable = 100;
   schedule.CoroutineYield();
-  assert(local_variable == 100);
+  int temp = local_variable;
+  assert(temp == 100);
 }
 
 void CoroutineLocalFunc2(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocal<int>& local_variable) {
-  local_variable.Set(200);
+  local_variable = 200;
   schedule.CoroutineYield();
   assert(local_variable == 200);
 }
 
 void CoroutineLocalFunc3(MyCoroutine::Schedule& schedule,
                                  MyCoroutine::CoroutineLocal<int>& local_variable) {
-  local_variable.Set(300);
+  local_variable = 300;
   schedule.CoroutineYield();
   assert(local_variable == 300);
 }
@@ -40,7 +41,7 @@ void CoroutineLocalWithBatchChild(MyCoroutine::Schedule& schedule,
 void CoroutineLocalWithBatch(MyCoroutine::Schedule& schedule,
                                      MyCoroutine::CoroutineLocal<int>& local_variable) {
   MyCoroutine::WaitGroup wg(schedule);
-  local_variable.Set(100);
+  local_variable = 100;
   wg.Add(CoroutineLocalWithBatchChild, std::ref(schedule), std::ref(local_variable));
   wg.Add(CoroutineLocalWithBatchChild, std::ref(schedule), std::ref(local_variable));
   wg.Wait();
