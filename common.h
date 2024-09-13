@@ -17,11 +17,15 @@ constexpr int32_t kStackSize = 64 * 1024;     // 协程栈默认大小为 64K
 constexpr int32_t kMaxBatchSize = 5120;       // 允许创建的最大批量执行池大小
 constexpr int32_t kMaxCoroutineSize = 10240;  // 允许创建的最大协程池大小
 /**
- * 从协程的状态机转移如下所示：
+ * 1.协程的状态机转移如下所示：
  *  kIdle->kReady
  *  kReady->kRun
  *  kRun->kSuspend
  *  kSuspend->kRun
+ *  kRun->kIdle
+ * 2.批量的并发执行状态机转移如下所示：
+ *  kIdle->kReady
+ *  kReady->kRun
  *  kRun->kIdle
  */
 enum class State {
