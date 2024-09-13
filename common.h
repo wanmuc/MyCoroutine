@@ -53,7 +53,7 @@ typedef struct LocalVariable {
   function<void(void *)> free{nullptr};  // 用于释放本地协程变量的内存
 } LocalVariable;
 
-// 批量的并发执行结构体
+// 批量并发执行结构体
 typedef struct Batch {
   int32_t bid{kInvalidBid};                         // 批量执行id
   State state{State::kIdle};                        // 批量执行的状态
