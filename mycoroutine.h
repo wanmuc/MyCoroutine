@@ -60,7 +60,6 @@ class Schedule {
   }
 
   void BatchRun(int32_t bid);     // 运行批量执行
-  bool IsBatchDone(int32_t bid);  // 批量执行是否完成
 
   void CoMutexInit(CoMutex &co_mutex);     // 互斥锁初始化
   void CoMutexClear(CoMutex &co_mutex);    // 互斥锁清理
@@ -80,6 +79,7 @@ class Schedule {
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
   void CoroutineInit(Coroutine *routine, function<void()> entry);    // 从协程的初始化
+  bool IsBatchDone(int32_t bid);  // 批量执行是否完成
 
  private:
   ucontext_t main_;                           // 保存主协程的上下文
