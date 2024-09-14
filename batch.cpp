@@ -56,7 +56,9 @@ void Schedule::CoroutineResume4BatchStart(int32_t cid) {
 
 void Schedule::CoroutineResume4BatchFinish() {
   assert(is_master_);
-  assert(batch_finish_cid_list_.size() <= 1);
+  if (batch_finish_cid_list_.size() <= 0) {
+    return;
+  }
   for (const auto& cid : batch_finish_cid_list_) {
     CoroutineResume(cid);
   }

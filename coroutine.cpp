@@ -73,15 +73,10 @@ void Schedule::Run() {
         CoroutineResume(i);
         continue;
       }
-      // Batch的父从协程，要判断是Batch是否已经执行完
-      auto iter = find(batch_finish_cid_list_.begin(), batch_finish_cid_list_.end(), i);
-      if (iter != batch_finish_cid_list_.end()) {
-        CoroutineResume(i);
-        batch_finish_cid_list_.erase(iter);  // 唤醒之后，需要立即从batch_finish_cid_list_删除对应的cid
-      }
     }
-    CoMutexResume();  // 唤醒等待互斥锁的从协程
-    CoCondResume();   // 唤醒等待条件变量的从协程
+    CoMutexResume(); // 唤醒等待互斥锁的从协程
+    CoCondResume(); // 唤醒等待条件变量的从协程
+    CoroutineResume4BatchFinish(); // 唤醒Batch执行完的父从协程
   }
 }
 
