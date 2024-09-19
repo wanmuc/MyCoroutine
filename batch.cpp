@@ -50,6 +50,7 @@ void Schedule::CoroutineResume4BatchStart(int32_t cid) {
   }
   int32_t bid = routine->relate_bid;
   for (const auto& item : batchs_[bid]->child_cid_2_finish) {
+    assert(not item.second);
     CoroutineResume(item.first);  // 唤醒Batch中的子从协程
   }
 }
