@@ -49,6 +49,10 @@ void Schedule::CoroutineResume4BatchStart(int32_t cid) {
     return;
   }
   int32_t bid = routine->relate_bid;
+  // 从协程不是Batch中的父从协程，则没有需要唤醒的子从协程
+  if (batchs_[bid]->parent_cid != cid) {
+    return;
+  }
   for (const auto& item : batchs_[bid]->child_cid_2_finish) {
     assert(not item.second);
     CoroutineResume(item.first);  // 唤醒Batch中的子从协程
