@@ -21,7 +21,12 @@ void BatchRunParent(Schedule &schedule) {
 int main() {
   // 创建一个协程调度对象，生成大小为1024的协程池，每个协程中使用的Batch中最多添加3个批量任务
   Schedule schedule(1024, 3);
-  schedule.CoroutineCreate(BatchRunParent, ref(schedule));
-  schedule.Run(); // Run函数完成从协程的自行调度，直到所有的从协程都执行完
+  int32_t cid = schedule.CoroutineCreate(BatchRunParent, ref(schedule));
+  // 下面的3行调用，也可以使用schedule.Run()函数来实现，Run函数完成从协程的自行调度，直到所有的从协程都执行完
+  {
+    schedule.CoroutineResume(cid);
+    schedule.CoroutineResume4BatchStart(cid);
+    schedule.CoroutineResume4BatchFinish();
+  }
   return 0;
 }
