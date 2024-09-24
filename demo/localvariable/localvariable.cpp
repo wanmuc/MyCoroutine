@@ -7,17 +7,17 @@ using namespace MyCoroutine;
 
 void LocalVar1(Schedule &schedule, CoroutineLocalVariable<int32_t> &local_var,
                int &sum) {
-  local_var.Set(100);
+  local_var = 100;
   schedule.CoroutineYield();
-  assert(100 == local_var.Get());
-  sum += local_var.Get();
+  assert(100 == local_var);
+  sum += local_var;
 }
 void LocalVar2(Schedule &schedule, CoroutineLocalVariable<int32_t> &local_var,
                int &sum) {
-  local_var.Set(200);
+  local_var = 200;
   schedule.CoroutineYield();
-  assert(200 == local_var.Get());
-  sum += local_var.Get();
+  assert(200 == local_var);
+  sum += local_var;
 }
 
 int main() {
