@@ -47,7 +47,7 @@ enum class CondState {
   kNotifyAll = 3,   // 通知所有等待者
 };
 
-// 协程本地变量结构体
+// 协程本地变量辅助结构体
 typedef struct LocalVariable {
   void *data{nullptr};
   function<void(void *)> free{nullptr};  // 用于释放本地协程变量的内存
@@ -81,7 +81,7 @@ typedef struct Coroutine {
   function<void()> entry{nullptr};             // 从协程入口函数
   ucontext_t ctx;                              // 从协程执行上下文
   uint8_t *stack{nullptr};                     // 每个协程独占的协程栈，动态分配
-  unordered_map<void *, LocalVariable> local;  // 协程本地变量，key是协程变量的内存地址
+  unordered_map<void *, LocalVariable> local;  // 协程本地变量映射map，key是协程变量的内存地址
   int32_t relate_bid{kInvalidBid};             // 关联的批量执行id
 } Coroutine;
 };  // namespace MyCoroutine
