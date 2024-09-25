@@ -10,9 +10,9 @@ class Mutex {
   Mutex(Schedule &schedule) : schedule_(schedule) { schedule_.CoMutexInit(co_mutex_); }
   ~Mutex() { schedule_.CoMutexClear(co_mutex_); }
 
-  void Lock();
-  void UnLock();
-  bool TryLock();
+  void Lock() { schedule_.CoMutexLock(co_mutex_); }
+  void UnLock() { schedule_.CoMutexUnLock(co_mutex_); }
+  bool TryLock() { return schedule_.CoMutexTryLock(co_mutex_); }
 
  private:
   CoMutex co_mutex_;

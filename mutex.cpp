@@ -63,10 +63,4 @@ void Schedule::CoMutexResume() {
     CoroutineResume(cid);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
   }
 }
-
-void Mutex::Lock() { schedule_.CoMutexLock(co_mutex_); }
-
-void Mutex::UnLock() { schedule_.CoMutexUnLock(co_mutex_); }
-
-bool Mutex::TryLock() { return schedule_.CoMutexTryLock(co_mutex_); }
 }  // namespace MyCoroutine
