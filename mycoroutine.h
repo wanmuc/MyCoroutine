@@ -59,7 +59,7 @@ class Schedule {
     return true;
   }
 
-  void BatchRun(int32_t bid);     // 运行批量执行
+  void BatchRun(int32_t bid);  // 运行批量执行
 
   void CoMutexInit(CoMutex &co_mutex);     // 互斥锁初始化
   void CoMutexClear(CoMutex &co_mutex);    // 互斥锁清理
@@ -76,10 +76,17 @@ class Schedule {
   void CoCondNotifyAll(CoCond &cond);  // 条件变量kNotifyAll
   int CoCondResume();
 
+  void CoRWLockInit(CoRWLock &rwlock);      // 读写锁初始化
+  void CoRWLockClear(CoRWLock &rwLock);     // 读写锁清理
+  void CoRWLockWrLock(CoRWLock &rwlock);    // 加写锁
+  void CoRWLockWrUnLock(CoRWLock &rwlock);  // 解写锁
+  void CoRWLockRdLock(CoRWLock &rwlock);    // 加读锁
+  void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
+
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
   void CoroutineInit(Coroutine *routine, function<void()> entry);    // 从协程的初始化
-  bool IsBatchDone(int32_t bid);  // 批量执行是否完成
+  bool IsBatchDone(int32_t bid);                                     // 批量执行是否完成
 
  private:
   ucontext_t main_;                           // 保存主协程的上下文
@@ -94,5 +101,6 @@ class Schedule {
   list<int> batch_finish_cid_list_;           // 完成了批量执行的关联的从协程id
   unordered_set<CoMutex *> mutexs_;           // 互斥锁集合
   unordered_set<CoCond *> conds_;             // 条件变量集合
+  unordered_set<CoRWLock *> rwlocks_;         // 读写锁集合
 };
 }  // namespace MyCoroutine

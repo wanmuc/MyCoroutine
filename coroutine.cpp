@@ -74,9 +74,9 @@ void Schedule::Run() {
         continue;
       }
     }
-    CoMutexResume(); // 唤醒等待互斥锁的从协程
-    CoCondResume(); // 唤醒等待条件变量的从协程
-    CoroutineResume4BatchFinish(); // 唤醒Batch执行完的父从协程
+    CoMutexResume();                // 唤醒等待互斥锁的从协程
+    CoCondResume();                 // 唤醒等待条件变量的从协程
+    CoroutineResume4BatchFinish();  // 唤醒Batch执行完的父从协程
   }
 }
 
