@@ -38,13 +38,21 @@ enum class State {
 /**
  * 读写锁的状态，读写锁的状态转移如下：
  * kUnLock -> kWriteLock,kReadLock
- * kWriteLock -> kUnLock,kReadLock
- * kReadLock -> kUnLock,kWriteLock
+ * kWriteLock -> kUnLock,kReadLock,kWriteLock
+ * kReadLock -> kUnLock,kReadLock,kWriteLock
  */
 enum class RWLockState {
   kUnLock = 1,     // 无锁状态
   kWriteLock = 2,  // 写锁锁定状态
   kReadLock = 3,   // 读锁锁定状态
+};
+
+/**
+ * 读写锁类型
+ */
+enum class RWLockType {
+  kWrite = 1,  // 写锁
+  kRead = 2,   // 读锁
 };
 
 /**
@@ -85,7 +93,7 @@ typedef struct CoRWLock {
   RWLockState lock_state;                    // 读写锁状态
   int32_t hold_write_cid;                    // 当前持有写锁的从协程id
   unordered_set<int32_t> hold_read_cid_set;  // 当前持有读锁的从协程id查重集合
-  list<int32_t> suspend_cid_list;            // 因为等待写锁而被挂起的从协程id列表
+  list<pair<RWLockType, int32_t>> suspend_list;  // 因为等待写锁而被挂起的从协程信息（锁类型+从协程id）
 } CoRWLock;
 
 // 协程条件变量

@@ -1,55 +1,55 @@
 #include "mutex.h"
 
 namespace MyCoroutine {
-void Schedule::CoMutexInit(CoMutex& co_mutex) {
-  co_mutex.lock = false;
-  co_mutex.hold_cid = slave_cid_;
-  assert(mutexs_.find(&co_mutex) == mutexs_.end());
-  mutexs_.insert(&co_mutex);
+void Schedule::CoMutexInit(CoMutex& mutex) {
+  mutex.lock = false;
+  mutex.hold_cid = slave_cid_;
+  assert(mutexs_.find(&mutex) == mutexs_.end());
+  mutexs_.insert(&mutex);
 }
 
-void Schedule::CoMutexClear(CoMutex& co_mutex) { mutexs_.erase(&co_mutex); }
+void Schedule::CoMutexClear(CoMutex& mutex) { mutexs_.erase(&mutex); }
 
-void Schedule::CoMutexLock(CoMutex& co_mutex) {
+void Schedule::CoMutexLock(CoMutex& mutex) {
   while (true) {
     assert(not is_master_);
-    if (not co_mutex.lock) {
-      co_mutex.lock = true;  // 加锁成功，直接返回
-      co_mutex.hold_cid = slave_cid_;
+    if (not mutex.lock) {
+      mutex.lock = true;  // 加锁成功，直接返回
+      mutex.hold_cid = slave_cid_;
       return;
     }
     // 不可重入，同一个从协程只能锁定一次，不能锁定多次
-    assert(co_mutex.hold_cid != slave_cid_);
+    assert(mutex.hold_cid != slave_cid_);
     // 更新因为等待互斥锁而被挂起的从协程id
-    auto iter = find(co_mutex.suspend_cid_list.begin(), co_mutex.suspend_cid_list.end(), slave_cid_);
-    if (iter == co_mutex.suspend_cid_list.end()) {
-      co_mutex.suspend_cid_list.push_back(slave_cid_);
+    auto iter = find(mutex.suspend_cid_list.begin(), mutex.suspend_cid_list.end(), slave_cid_);
+    if (iter == mutex.suspend_cid_list.end()) {
+      mutex.suspend_cid_list.push_back(slave_cid_);
     }
     // 从协程让出执行权
     CoroutineYield();
   }
 }
 
-bool Schedule::CoMutexTryLock(CoMutex& co_mutex) {
+bool Schedule::CoMutexTryLock(CoMutex& mutex) {
   assert(not is_master_);
-  if (not co_mutex.lock) {
-    co_mutex.lock = true;  // 加锁成功，直接返回
-    co_mutex.hold_cid = slave_cid_;
+  if (not mutex.lock) {
+    mutex.lock = true;  // 加锁成功，直接返回
+    mutex.hold_cid = slave_cid_;
     return true;
   }
   return false;
 }
 
-void Schedule::CoMutexUnLock(CoMutex& co_mutex) {
+void Schedule::CoMutexUnLock(CoMutex& mutex) {
   assert(not is_master_);
-  assert(co_mutex.lock);                    // 必须是锁定的
-  assert(co_mutex.hold_cid == slave_cid_);  // 必须是持有锁的从协程来释放锁。
-  co_mutex.lock = false;  // 设置成false即可，后续由调度器schedule去激活那些被挂起的从协程
-  co_mutex.hold_cid = kInvalidCid;
+  assert(mutex.lock);                    // 必须是锁定的
+  assert(mutex.hold_cid == slave_cid_);  // 必须是持有锁的从协程来释放锁。
+  mutex.lock = false;  // 设置成false即可，后续由调度器schedule去激活那些被挂起的从协程
+  mutex.hold_cid = kInvalidCid;
   // 释放锁之后，要判断之前是否在等待队列中，如果是，则需要从等待队列中删除
-  auto iter = find(co_mutex.suspend_cid_list.begin(), co_mutex.suspend_cid_list.end(), slave_cid_);
-  if (iter != co_mutex.suspend_cid_list.end()) {
-    co_mutex.suspend_cid_list.erase(iter);
+  auto iter = find(mutex.suspend_cid_list.begin(), mutex.suspend_cid_list.end(), slave_cid_);
+  if (iter != mutex.suspend_cid_list.end()) {
+    mutex.suspend_cid_list.erase(iter);
   }
 }
 

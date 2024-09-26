@@ -7,15 +7,15 @@ namespace MyCoroutine {
 // 协程互斥锁
 class Mutex {
  public:
-  Mutex(Schedule &schedule) : schedule_(schedule) { schedule_.CoMutexInit(co_mutex_); }
-  ~Mutex() { schedule_.CoMutexClear(co_mutex_); }
+  Mutex(Schedule &schedule) : schedule_(schedule) { schedule_.CoMutexInit(mutex_); }
+  ~Mutex() { schedule_.CoMutexClear(mutex_); }
 
-  void Lock() { schedule_.CoMutexLock(co_mutex_); }
-  void UnLock() { schedule_.CoMutexUnLock(co_mutex_); }
-  bool TryLock() { return schedule_.CoMutexTryLock(co_mutex_); }
+  void Lock() { schedule_.CoMutexLock(mutex_); }
+  void UnLock() { schedule_.CoMutexUnLock(mutex_); }
+  bool TryLock() { return schedule_.CoMutexTryLock(mutex_); }
 
  private:
-  CoMutex co_mutex_;
+  CoMutex mutex_;
   Schedule &schedule_;
 };
 

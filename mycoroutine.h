@@ -61,11 +61,11 @@ class Schedule {
 
   void BatchRun(int32_t bid);  // 运行批量执行
 
-  void CoMutexInit(CoMutex &co_mutex);     // 互斥锁初始化
-  void CoMutexClear(CoMutex &co_mutex);    // 互斥锁清理
-  void CoMutexLock(CoMutex &co_mutex);     // 锁定互斥锁
-  void CoMutexUnLock(CoMutex &co_mutex);   // 解锁互斥锁
-  bool CoMutexTryLock(CoMutex &co_mutex);  // 尝试锁定互斥锁
+  void CoMutexInit(CoMutex &mutex);     // 互斥锁初始化
+  void CoMutexClear(CoMutex &mutex);    // 互斥锁清理
+  void CoMutexLock(CoMutex &mutex);     // 锁定互斥锁
+  void CoMutexUnLock(CoMutex &mutex);   // 解锁互斥锁
+  bool CoMutexTryLock(CoMutex &mutex);  // 尝试锁定互斥锁
   void CoMutexResume();
 
   void CoCondInit(CoCond &cond);   // 条件变量初始化
