@@ -68,6 +68,14 @@ typedef struct CoMutex {
   list<int32_t> suspend_cid_list;  // 因为等待互斥锁而被挂起的从协程id列表
 } CoMutex;
 
+// 协程读写锁
+typedef struct CoRWLock {
+  int32_t hold_write_cid;                   // 当前持有写锁的从协程id
+  unordered_set<int32_t> hold_read_cid_set; // 当前持有读锁的从协程id查重集合
+  RWLockState lock_state;                   // 读写锁状态
+  list<int32_t> suspend_cid_list; // 因为等待写锁而被挂起的从协程id列表
+} CoRWLock;
+
 // 协程条件变量
 typedef struct CoCond {
   CondState state;                         // 条件变量状态
