@@ -9,26 +9,26 @@
 using namespace std;
 
 namespace {
-void WrLockWrap(MyCoroutine::Schedule &schedule, MyCoroutine::CoMutex &co_rwlock, int &value) {
-  MyCoroutine::WrLockGuard lock_guard(co_rwlock);
+void WrLockWrap(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+  MyCoroutine::WrLockGuard lock_guard(rwlock);
   assert(value == 3);
   value++;
   schedule.CoroutineYield();
 }
-void RdLockWrap1(MyCoroutine::Schedule &schedule, MyCoroutine::CoRWLock &co_rwlock, int &value) {
-  MyCoroutine::RdLockGuard lock_guard(co_rwlock);
+void RdLockWrap1(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+  MyCoroutine::RdLockGuard lock_guard(rwlock);
   assert(value == 0);
   value++;
   schedule.CoroutineYield();
 }
-void RdLockWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::CoRWLock &co_rwlock, int &value) {
-  MyCoroutine::RdLockGuard lock_guard(co_rwlock);
+void RdLockWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+  MyCoroutine::RdLockGuard lock_guard(rwlock);
   assert(value == 1);
   value++;
   schedule.CoroutineYield();
 }
-void RdLockWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::CoRWLock &co_rwlock, int &value) {
-  MyCoroutine::RdLockGuard lock_guard(co_rwlock);
+void RdLockWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+  MyCoroutine::RdLockGuard lock_guard(rwlock);
   assert(value == 2);
   value++;
   schedule.CoroutineYield();
@@ -38,14 +38,12 @@ void RdLockWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::CoRWLock &co_rwlo
 // 协程读写锁测试用例-WrLockAndRdLock
 TEST_CASE(CoRWLock_WrLockAndRdLockWrap) {
   int value = 0;
-  MyCoroutine::CoRWLock co_rwlock;
   MyCoroutine::Schedule schedule(1024);
-  schedule.CoRWLockInit(co_rwlock);
-  schedule.CoroutineCreate(RdLockWrap1, std::ref(schedule), std::ref(co_rwlock), std::ref(value));
-  schedule.CoroutineCreate(RdLockWrap2, std::ref(schedule), std::ref(co_rwlock), std::ref(value));
-  schedule.CoroutineCreate(RdLockWrap3, std::ref(schedule), std::ref(co_rwlock), std::ref(value));
-  schedule.CoroutineCreate(WrLockWrap, std::ref(schedule), std::ref(co_rwlock), std::ref(value));
+  MyCoroutine::RWLock rwlock(schedule);
+  schedule.CoroutineCreate(RdLockWrap1, std::ref(schedule), std::ref(rwlock), std::ref(value));
+  schedule.CoroutineCreate(RdLockWrap2, std::ref(schedule), std::ref(rwlock), std::ref(value));
+  schedule.CoroutineCreate(RdLockWrap3, std::ref(schedule), std::ref(rwlock), std::ref(value));
+  schedule.CoroutineCreate(WrLockWrap, std::ref(schedule), std::ref(rwlock), std::ref(value));
   schedule.Run();
-  schedule.CoRWLockClear(co_rwlock);
   ASSERT_EQ(value, 4);
 }
