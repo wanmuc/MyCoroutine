@@ -76,13 +76,16 @@ void Schedule::CoRWLockRdLock(CoRWLock &rwlock) {
 
 void Schedule::CoRWLockRdUnLock(CoRWLock &rwlock) {
   assert(not is_master_);
-  assert(rwlock.lock_state == RWLockState::kReadLock); // 必须是读锁锁定
+  assert(rwlock.lock_state == RWLockState::kReadLock); // 必须是读锁锁定或者无锁
   assert(rwlock.hold_read_cid_set.find(slave_cid_) !=
          rwlock.hold_read_cid_set.end()); // 必须是持有锁的从协程来释放锁。
-  rwlock.lock_state = RWLockState::kUnLock; // 设置成无锁状态即可，后续由调度器schedule去激活那些被挂起的从协程
   rwlock.hold_read_cid_set.erase(slave_cid_);
   // 释放锁之后，则需要从等待队列中删除（可能之前已经在CoRWLockResume中删除了，这里是做兜底的清理）
   rwlock.suspend_list.remove(make_pair(RWLockType::kRead, slave_cid_));
+  if (rwlock.hold_read_cid_set.size() <= 0) {
+    // 没有持有读锁的协程了，才设置成无锁状态，后续由调度器schedule去激活那些被挂起的从协程
+    rwlock.lock_state = RWLockState::kUnLock;
+  }
 }
 
 void Schedule::CoRWLockResume() {
