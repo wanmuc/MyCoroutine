@@ -86,16 +86,30 @@ void Schedule::CoRWLockRdUnLock(CoRWLock &rwlock) {
 
 void Schedule::CoRWLockResume() {
   assert(is_master_);
-  for (auto* rwlock : rwlocks_) {
+  for (auto *rwlock : rwlocks_) {
     if (rwlock->lock_state == RWLockState::kWriteLock ||
         rwlock->lock_state == RWLockState::kReadLock) {
+      // 这里读锁也不唤醒是因为，因为读锁而被挂起的只有写锁，故唤醒了写锁的协程，这个协议也会再度挂起。
       continue; // 写锁或者读锁锁定，不需要唤醒其他从协程
     }
-    if (rwlock->suspend_list.size() <= 0) continue;  // 锁已经释放了，但是没有挂起的从协程，也不需要唤醒
-    // TODO，这里读锁和写锁的唤醒策略可以是不同的，后续再优化
-    auto item = rwlock->suspend_list.front();
-    rwlock->suspend_list.pop_front();
-    CoroutineResume(item.second);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
+    while (rwlock->suspend_list.size() > 0 &&
+           (rwlock->lock_state == RWLockState::kUnLock ||
+            rwlock->lock_state == RWLockState::kReadLock)) {
+      if (rwlock->lock_state == RWLockState::kUnLock) { // 无锁
+        auto item = rwlock->suspend_list.front();
+        rwlock->suspend_list.pop_front();
+        CoroutineResume(item.second);
+        continue;
+      }
+      // 执行到这里是读锁
+      if (item.first == RWLockType::kRead) { // 可以再加读锁
+        auto item = rwlock->suspend_list.front();
+        rwlock->suspend_list.pop_front();
+        CoroutineResume(item.second);
+      } else {
+        break; // 不可以再加写锁，之间跳出while循环
+      }
+    }
   }
 }
 } // namespace MyCoroutine
