@@ -102,8 +102,8 @@ void Schedule::CoRWLockResume() {
         continue;
       }
       // 执行到这里是读锁
+      auto item = rwlock->suspend_list.front();
       if (item.first == RWLockType::kRead) { // 可以再加读锁
-        auto item = rwlock->suspend_list.front();
         rwlock->suspend_list.pop_front();
         CoroutineResume(item.second);
       } else {
