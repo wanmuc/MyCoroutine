@@ -24,9 +24,9 @@ void Schedule::CoRWLockWrLock(CoRWLock &rwlock) {
     }
     // 更新因为等待读写锁而被挂起的从协程信息（只要有加锁了，加写锁的协程都要做挂起等待）
     auto iter = find(rwlock.suspend_list.begin(), rwlock.suspend_list.end(),
-                     {RWLockType::kWrite, slave_cid_});
+                     make_pair(RWLockType::kWrite, slave_cid_));
     if (iter == rwlock.suspend_list.end()) {
-      rwlock.suspend_list.push_back({RWLockType::kWrite, slave_cid_});
+      rwlock.suspend_list.push_back(make_pair(RWLockType::kWrite, slave_cid_));
     }
     // 从协程让出执行权
     CoroutineYield();
