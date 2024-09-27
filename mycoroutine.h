@@ -82,6 +82,7 @@ class Schedule {
   void CoRWLockWrUnLock(CoRWLock &rwlock);  // 解写锁
   void CoRWLockRdLock(CoRWLock &rwlock);    // 加读锁
   void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
+  void CoRWLockResume();
 
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
