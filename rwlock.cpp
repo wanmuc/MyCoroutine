@@ -24,9 +24,9 @@ void Schedule::CoRWLockWrLock(CoRWLock &rwlock) {
     }
     // 更新因为等待读写锁而被挂起的从协程信息（只要有加锁了，加写锁的协程都要做挂起等待）
     auto iter = find(rwlock.suspend_list.begin(), rwlock.suspend_list.end(),
-                     make_pair(RWLockState::kWriteLock, slave_cid_));
+                     {RWLockType::kWrite, slave_cid_});
     if (iter == rwlock.suspend_list.end()) {
-      rwlock.suspend_list.push_back(make_pair(RWLockState::kWriteLock, slave_cid_));
+      rwlock.suspend_list.push_back({RWLockType::kWrite, slave_cid_});
     }
     // 从协程让出执行权
     CoroutineYield();
@@ -42,7 +42,7 @@ void Schedule::CoRWLockWrUnLock(CoRWLock &rwlock) {
 
   // 释放锁之后，要判断之前是否在等待队列中，如果是，则需要从等待队列中删除
   auto iter = find(rwlock.suspend_list.begin(), rwlock.suspend_list.end(),
-                   {RWLockState::kWriteLock, slave_cid_});
+                   {RWLockType::kWrite, slave_cid_});
   if (iter != rwlock.suspend_list.end()) {
     rwlock.suspend_list.erase(iter);
   }
@@ -65,9 +65,9 @@ void Schedule::CoRWLockRdLock(CoRWLock &rwlock) {
     }
     // 执行到这里，就是写锁锁定状态，需要做挂起等待，等待写锁释放。
     auto iter = find(rwlock.suspend_list.begin(), rwlock.suspend_list.end(),
-                     {RWLockState::kReadLock, slave_cid_});
+                     {RWLockType::kRead, slave_cid_});
     if (iter == rwlock.suspend_list.end()) {
-      rwlock.suspend_list.push_back({RWLockState::kReadLock, slave_cid_});
+      rwlock.suspend_list.push_back({RWLockType::kRead, slave_cid_});
     }
     // 从协程让出执行权
     CoroutineYield();
@@ -81,7 +81,7 @@ void Schedule::CoRWLockRdUnLock(CoRWLock &rwlock) {
          rwlock.hold_read_cid_set.end()); // 必须是持有锁的从协程来释放锁。
   rwlock.lock_state = RWLockState::kUnLock; // 设置成无锁状态即可，后续由调度器schedule去激活那些被挂起的从协程
   // 释放锁之后，则需要从等待队列中删除（可能之前已经在CoRWLockResume中删除了，这里是做必要的清理）
-  rwlock.suspend_list.remove({RWLockState::kReadLock, slave_cid_});
+  rwlock.suspend_list.remove({RWLockType::kRead, slave_cid_});
 }
 
 void Schedule::CoRWLockResume() {
