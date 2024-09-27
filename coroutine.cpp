@@ -76,6 +76,7 @@ void Schedule::Run() {
     }
     CoMutexResume();                // 唤醒等待互斥锁的从协程
     CoCondResume();                 // 唤醒等待条件变量的从协程
+    CoRWLockResume();               // 唤醒等待读写锁的从协程
     CoroutineResume4BatchFinish();  // 唤醒Batch执行完的父从协程
   }
 }
