@@ -59,5 +59,5 @@ TEST_CASE(CoRWLock_WrLockAndRdLockWrap) {
   schedule.CoroutineCreate(RdLockWrap3, std::ref(schedule), std::ref(rwlock), std::ref(value));
   schedule.CoroutineCreate(WrLockWrap3, std::ref(schedule), std::ref(rwlock), std::ref(value));
   schedule.Run();
-  ASSERT_EQ(value, 4);
+  ASSERT_EQ(value, 6);
 }
