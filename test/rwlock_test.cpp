@@ -137,6 +137,6 @@ TEST_CASE(CoRWLock_Resume_RdLockThenWrLock) {
   ASSERT_EQ(value, 6);
   schedule.CoRWLockResume();  // 唤醒最后 1个写锁
   ASSERT_EQ(value, 7);
-  schedule.CoroutineResume(3);  // 解写锁
+  schedule.CoroutineResume(4);  // 解写锁
   ASSERT_EQ(value, 8);
 }
