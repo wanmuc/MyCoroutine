@@ -11,19 +11,19 @@ using namespace std;
 namespace {
 void WrLockWrap1(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
   MyCoroutine::WrLockGuard lock_guard(rwlock);
-  assert(value == 3);
+  assert(value == 4);
   value++;
   schedule.CoroutineYield();
 }
 void WrLockWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
   MyCoroutine::WrLockGuard lock_guard(rwlock);
-  assert(value == 4);
+  assert(value == 5);
   value++;
   schedule.CoroutineYield();
 }
 void WrLockWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
   MyCoroutine::WrLockGuard lock_guard(rwlock);
-  assert(value == 5);
+  assert(value == 3);
   value++;
   schedule.CoroutineYield();
 }
