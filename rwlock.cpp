@@ -13,7 +13,8 @@ void Schedule::CoRWLockClear(CoRWLock &rwlock) { rwlocks_.erase(&rwlock); }
 void Schedule::CoRWLockWrLock(CoRWLock &rwlock) {
   while (true) {
     assert(not is_master_);
-    if (rwlock.lock_state == RWLockState::kUnLock) {  // 无锁状态，直接加写锁
+    if (rwlock.lock_state == RWLockState::kUnLock) {  // 无锁状态，直接加写锁，并返回
+      assert(rwlock.hold_write_cid == kInvalidCid);
       rwlock.lock_state = RWLockState::kWriteLock;
       rwlock.hold_write_cid = slave_cid_;
       return;
@@ -22,7 +23,7 @@ void Schedule::CoRWLockWrLock(CoRWLock &rwlock) {
       // 不可重入，同一个从协程只能锁一次写锁，不能锁定多次
       assert(rwlock.hold_write_cid != slave_cid_);
     }
-    // 更新因为等待读写锁而被挂起的从协程信息（只要有加锁了，加写锁的协程都要做挂起等待）
+    // 更新因为等待读写锁而被挂起的从协程信息（只要有加锁了，加写锁的协程都要做挂起）
     auto iter = find(rwlock.suspend_list.begin(), rwlock.suspend_list.end(), make_pair(RWLockType::kWrite, slave_cid_));
     if (iter == rwlock.suspend_list.end()) {
       rwlock.suspend_list.push_back(make_pair(RWLockType::kWrite, slave_cid_));
@@ -73,7 +74,7 @@ void Schedule::CoRWLockRdLock(CoRWLock &rwlock) {
 
 void Schedule::CoRWLockRdUnLock(CoRWLock &rwlock) {
   assert(not is_master_);
-  assert(rwlock.lock_state == RWLockState::kReadLock);  // 必须是读锁锁定或者无锁
+  assert(rwlock.lock_state == RWLockState::kReadLock);  // 必须是读锁锁定
   assert(rwlock.hold_read_cid_set.find(slave_cid_) !=
          rwlock.hold_read_cid_set.end());  // 必须是持有锁的从协程来释放锁。
   rwlock.hold_read_cid_set.erase(slave_cid_);
@@ -106,7 +107,7 @@ void Schedule::CoRWLockResume() {
         rwlock->suspend_list.pop_front();
         CoroutineResume(item.second);
       } else {
-        break;  // 不可以再加写锁，之间跳出while循环
+        break;  // 不可以再加写锁，直接跳出while循环
       }
     }
   }
