@@ -9,9 +9,21 @@
 using namespace std;
 
 namespace {
-void WrLockWrap(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+void WrLockWrap1(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
   MyCoroutine::WrLockGuard lock_guard(rwlock);
   assert(value == 3);
+  value++;
+  schedule.CoroutineYield();
+}
+void WrLockWrap2(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+  MyCoroutine::WrLockGuard lock_guard(rwlock);
+  assert(value == 4);
+  value++;
+  schedule.CoroutineYield();
+}
+void WrLockWrap3(MyCoroutine::Schedule &schedule, MyCoroutine::RWLock &rwlock, int &value) {
+  MyCoroutine::WrLockGuard lock_guard(rwlock);
+  assert(value == 5);
   value++;
   schedule.CoroutineYield();
 }
@@ -42,8 +54,10 @@ TEST_CASE(CoRWLock_WrLockAndRdLockWrap) {
   MyCoroutine::RWLock rwlock(schedule);
   schedule.CoroutineCreate(RdLockWrap1, std::ref(schedule), std::ref(rwlock), std::ref(value));
   schedule.CoroutineCreate(RdLockWrap2, std::ref(schedule), std::ref(rwlock), std::ref(value));
+  schedule.CoroutineCreate(WrLockWrap1, std::ref(schedule), std::ref(rwlock), std::ref(value));
+  schedule.CoroutineCreate(WrLockWrap2, std::ref(schedule), std::ref(rwlock), std::ref(value));
   schedule.CoroutineCreate(RdLockWrap3, std::ref(schedule), std::ref(rwlock), std::ref(value));
-  schedule.CoroutineCreate(WrLockWrap, std::ref(schedule), std::ref(rwlock), std::ref(value));
+  schedule.CoroutineCreate(WrLockWrap3, std::ref(schedule), std::ref(rwlock), std::ref(value));
   schedule.Run();
   ASSERT_EQ(value, 4);
 }
