@@ -57,6 +57,15 @@ enum class RWLockType {
 };
 
 /**
+ * CallOnce状态
+ */
+enum class CallOnceState {
+  kInit = 1,   // 初始化
+  kInCall = 2, // 调用中
+  kFinish = 3, // 完成
+};
+
+/**
  * 条件变量的状态，条件变量的状态转移如下：
  * kNotifyNone -> kNotifyOne,kNotifyAll
  * kNotifyOne -> kNotifyNone,kNotifyOne,kNotifyAll
@@ -96,6 +105,13 @@ typedef struct CoRWLock {
   unordered_set<int32_t> hold_read_cid_set;  // 当前持有读锁的从协程id查重集合
   list<pair<RWLockType, int32_t>> suspend_list;  // 因为等待写锁而被挂起的从协程信息（锁类型+从协程id）
 } CoRWLock;
+
+// CallOnce
+typedef struct CallOnce {
+  CallOnceState state;                    // CallOnce状态
+  function<void()> entry{nullptr};        // 要执行的函数
+  unordered_set<int32_t> suspend_cid_set; // 被挂起的从协程id查重集合
+} CallOnce;
 
 // 协程条件变量
 typedef struct CoCond {
