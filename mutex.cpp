@@ -3,7 +3,7 @@
 namespace MyCoroutine {
 void Schedule::CoMutexInit(CoMutex& mutex) {
   mutex.lock = false;
-  mutex.hold_cid = slave_cid_;
+  mutex.hold_cid = kInvalidCid;
   assert(mutexs_.find(&mutex) == mutexs_.end());
   mutexs_.insert(&mutex);
 }
