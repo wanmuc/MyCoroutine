@@ -84,6 +84,10 @@ class Schedule {
   void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
   void CoRWLockResume();
 
+  void CoCallOnceInit(CoCallOnce &call_once);  // CallOnce初始化
+  void CoCallOnceClear(CoCallOnce &call_once); // CallOnce清理
+  void CoCallOnceDo(CoCallOnce &call_once);    // CallOnce调用
+
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
   void CoroutineInit(Coroutine *routine, function<void()> entry);    // 从协程的初始化
@@ -103,5 +107,6 @@ class Schedule {
   unordered_set<CoMutex *> mutexs_;           // 互斥锁集合
   unordered_set<CoCond *> conds_;             // 条件变量集合
   unordered_set<CoRWLock *> rwlocks_;         // 读写锁集合
+  unordered_set<CoCallOnce *> callonces_;     // CallOnce集合
 };
 }  // namespace MyCoroutine

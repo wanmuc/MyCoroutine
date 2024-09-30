@@ -107,11 +107,11 @@ typedef struct CoRWLock {
 } CoRWLock;
 
 // CallOnce
-typedef struct CallOnce {
-  CallOnceState state;                    // CallOnce状态
-  function<void()> entry{nullptr};        // 要执行的函数
+typedef struct CoCallOnce {
+  CallOnceState state{CallOnceState::kInit}; // CallOnce状态
+  function<void()> entry{nullptr};           // 要执行的函数
   unordered_set<int32_t> suspend_cid_set; // 被挂起的从协程id查重集合
-} CallOnce;
+} CoCallOnce;
 
 // 协程条件变量
 typedef struct CoCond {
