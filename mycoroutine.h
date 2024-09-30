@@ -84,9 +84,22 @@ class Schedule {
   void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
   void CoRWLockResume();
 
-  void CoCallOnceInit(CoCallOnce &call_once);  // CallOnce初始化
-  void CoCallOnceClear(CoCallOnce &call_once); // CallOnce清理
-  void CoCallOnceDo(CoCallOnce &call_once);    // CallOnce调用
+  void CoCallOnceInit(CoCallOnce &callonce);   // CallOnce初始化
+  void CoCallOnceClear(CoCallOnce &callonce);  // CallOnce清理
+  template <typename Function, typename... Args>
+  void CoCallOnceDo(CoCallOnce &callonce, Function &&func, Args &&...args) {
+    if (callonce.state == CallOnceState::kInit) {
+      callonce.state = CallOnceState::kInCall;
+      func(forward<Args>(args)...);
+      callonce.state = CallOnceState::kFinish;
+      return;
+    }
+    while (callonce.state != CallOnceState::kFinish) {
+      callonce.suspend_cid_set.insert(slave_cid_);
+      CoroutineYield();
+    }
+  }
+  int CoCallOnceResume();
 
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口

@@ -60,9 +60,9 @@ enum class RWLockType {
  * CallOnce状态
  */
 enum class CallOnceState {
-  kInit = 1,   // 初始化
-  kInCall = 2, // 调用中
-  kFinish = 3, // 完成
+  kInit = 1,    // 初始化
+  kInCall = 2,  // 调用中
+  kFinish = 3,  // 完成
 };
 
 /**
@@ -108,9 +108,8 @@ typedef struct CoRWLock {
 
 // CallOnce
 typedef struct CoCallOnce {
-  CallOnceState state{CallOnceState::kInit}; // CallOnce状态
-  function<void()> entry{nullptr};           // 要执行的函数
-  unordered_set<int32_t> suspend_cid_set; // 被挂起的从协程id查重集合
+  CallOnceState state;                     // CallOnce状态
+  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoCallOnce;
 
 // 协程条件变量
