@@ -15,7 +15,7 @@ int Schedule::CoCallOnceResume() {
   int count = 0;
   for (auto* callonce : callonces_) {
     if (callonce->state != CallOnceState::kFinish) continue;  // 没执行完，不需要唤醒其他从协程
-    if (callonce->suspend_cid_list.size() <= 0) continue;     // 是没有挂起的从协程，也不需要唤醒
+    if (callonce->suspend_cid_set.size() <= 0) continue;      // 是没有挂起的从协程，也不需要唤醒
     // 唤醒所有等待的从协程
     for (const auto& cid : callonce->suspend_cid_set) {
       CoroutineResume(cid);

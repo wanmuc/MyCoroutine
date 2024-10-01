@@ -8,7 +8,7 @@ namespace MyCoroutine {
 class CallOnce {
  public:
   CallOnce(Schedule &schedule) : schedule_(schedule) { schedule_.CoCallOnceInit(co_callonce_); }
-  ~CallOnce() { schedule_.CoCallOnceClear(co_rwlock_); }
+  ~CallOnce() { schedule_.CoCallOnceClear(co_callonce_); }
 
   template <typename Function, typename... Args>
   void Do(Function &&func, Args &&...args) {
