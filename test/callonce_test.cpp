@@ -18,14 +18,14 @@ void CallOnceFunc(MyCoroutine::Schedule &schedule, int &value) {
 }
 
 void CallOnceInit(MyCoroutine::Schedule &schedule, MyCoroutine::CallOnce &callonce, int &value) {
-  callonce.Do(CallOnceFunc, std::ref(value));
+  callonce.Do(CallOnceFunc, std::ref(schedule), std::ref(value));
 }
 void CallOnceInCall(MyCoroutine::Schedule &schedule, MyCoroutine::CallOnce &callonce, int &value, int &incallvalue) {
-  callonce.Do(CallOnceFunc, std::ref(value));
+  callonce.Do(CallOnceFunc, std::ref(schedule), std::ref(value));
   incallvalue++;
 }
 void CallOnceFinish(MyCoroutine::Schedule &schedule, MyCoroutine::CallOnce &callonce, int &value, int &finishvalue) {
-  callonce.Do(CallOnceFunc, std::ref(value));
+  callonce.Do(CallOnceFunc, std::ref(schedule), std::ref(value));
   finishvalue++;
 }
 }  // namespace

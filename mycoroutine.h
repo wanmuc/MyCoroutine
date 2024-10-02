@@ -90,8 +90,9 @@ class Schedule {
   void CoCallOnceDo(CoCallOnce &callonce, Function &&func, Args &&...args) {
     if (callonce.state == CallOnceState::kInit) {
       callonce.state = CallOnceState::kInCall;
-      function<void()> call = bind(forward<Function>(func), forward<Args>(args)...);
-      call();
+      //      function<void()> call = bind(forward<Function>(func), forward<Args>(args)...);
+      //      call();
+      func(forward<Args>(args)...);
       callonce.state = CallOnceState::kFinish;
       return;
     }
