@@ -66,6 +66,14 @@ enum class CallOnceState {
 };
 
 /**
+ * SingleFlight状态
+ */
+enum class SingleFlightState {
+  kInit = 1,    // 初始化
+  kFinish = 2,  // 完成
+};
+
+/**
  * 条件变量的状态，条件变量的状态转移如下：
  * kNotifyNone -> kNotifyOne,kNotifyAll
  * kNotifyOne -> kNotifyNone,kNotifyOne,kNotifyAll
@@ -111,6 +119,12 @@ typedef struct CoCallOnce {
   CallOnceState state;                     // CallOnce状态
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoCallOnce;
+
+// SingleFlight
+typedef struct CoSingleFlight {
+  CallOnceState state;                     // CallOnce状态
+  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
+} CoSingleFlight;
 
 // 协程条件变量
 typedef struct CoCond {
