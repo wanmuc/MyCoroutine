@@ -10,7 +10,7 @@ using namespace std;
 
 namespace {
 
-void CallOnceFunc(int &value) {
+void CallOnceFunc(MyCoroutine::Schedule &schedule, int &value) {
   cout << "CallOnceFunc callonce" << endl;
   schedule.CoroutineYield();
   value++;
@@ -37,14 +37,14 @@ TEST_CASE(CoCallOnce_ALL) {
   int finishvalue = 0;
   MyCoroutine::Schedule schedule(1024);
   MyCoroutine::CallOnce callonce(schedule);
-  schedule.CoroutineCreate(CallOnceInit, std::ref(schedule), std::ref(CallOnce), std::ref(value));
-  schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(CallOnce), std::ref(value),
+  schedule.CoroutineCreate(CallOnceInit, std::ref(schedule), std::ref(callonce), std::ref(value));
+  schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(incallvalue));
-  schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(CallOnce), std::ref(value),
+  schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(incallvalue));
-  schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(CallOnce), std::ref(value),
+  schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(incallvalue));
-  schedule.CoroutineCreate(CallOnceFinish, std::ref(schedule), std::ref(CallOnce), std::ref(value),
+  schedule.CoroutineCreate(CallOnceFinish, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(finishvalue));
   schedule.CoroutineResume(0);
   schedule.CoroutineResume(1);
