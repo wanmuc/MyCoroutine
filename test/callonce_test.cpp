@@ -46,6 +46,7 @@ TEST_CASE(CoCallOnce_ALL) {
                            std::ref(incallvalue));
   schedule.CoroutineCreate(CallOnceFinish, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(finishvalue));
+  // TODO，新增注释，标记执行的逻辑。
   schedule.CoroutineResume(0);
   schedule.CoroutineResume(1);
   schedule.CoroutineResume(2);

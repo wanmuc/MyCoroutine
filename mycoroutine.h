@@ -84,24 +84,30 @@ class Schedule {
   void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
   void CoRWLockResume();
 
-  void CoCallOnceInit(CoCallOnce &callonce);   // CallOnce初始化
-  void CoCallOnceClear(CoCallOnce &callonce);  // CallOnce清理
+  void CoCallOnceInit(CoCallOnce &call_once);   // CallOnce初始化
+  void CoCallOnceClear(CoCallOnce &call_once);  // CallOnce清理
   template <typename Function, typename... Args>
-  void CoCallOnceDo(CoCallOnce &callonce, Function &&func, Args &&...args) {
-    if (callonce.state == CallOnceState::kInit) {
-      callonce.state = CallOnceState::kInCall;
-      //      function<void()> call = bind(forward<Function>(func), forward<Args>(args)...);
-      //      call();
+  void CoCallOnceDo(CoCallOnce &call_once, Function &&func, Args &&...args) {
+    if (call_once.state == CallOnceState::kInit) {
+      call_once.state = CallOnceState::kInCall;
       func(forward<Args>(args)...);
-      callonce.state = CallOnceState::kFinish;
+      call_once.state = CallOnceState::kFinish;
       return;
     }
-    while (callonce.state != CallOnceState::kFinish) {
-      callonce.suspend_cid_set.insert(slave_cid_);
+    while (call_once.state != CallOnceState::kFinish) {
+      call_once.suspend_cid_set.insert(slave_cid_);
       CoroutineYield();
     }
   }
   int CoCallOnceResume();
+
+  void CoSingleFlightInit(CoSingleFlight &single_flight);
+  void CoSingleFlightClear(CoSingleFlight &single_flight);
+  template <typename Function, typename... Args>
+  void CoSingleFlightDo(CoSingleFlight &single_flight, Function &&func, Args &&...args) {
+    // TODO
+  }
+  int CoSingleFlightResume();
 
  private:
   static void CoroutineRun(Schedule *schedule, Coroutine *routine);  // 从协程的执行入口
@@ -109,19 +115,20 @@ class Schedule {
   bool IsBatchDone(int32_t bid);                                     // 批量执行是否完成
 
  private:
-  ucontext_t main_;                           // 保存主协程的上下文
-  bool is_master_{true};                      // 是否主协程
-  int32_t slave_cid_{kInvalidCid};            // 运行的从协程的id（运行从协程时才有效）
-  int32_t not_idle_count_{0};                 // 就绪、运行和挂起的从协程数
-  int32_t coroutine_count_{0};                // 从协程总数
-  int32_t stack_size_{kStackSize};            // 从协程栈大小，单位字节
-  int32_t max_concurrency_in_batch_;          // 一个Batch中最大的并发数
-  Coroutine *coroutines_[kMaxCoroutineSize];  // 从协程数组池
-  Batch *batchs_[kMaxBatchSize];              // 批量执行数组池
-  list<int> batch_finish_cid_list_;           // 完成了批量执行的关联的从协程id
-  unordered_set<CoMutex *> mutexs_;           // 互斥锁集合
-  unordered_set<CoCond *> conds_;             // 条件变量集合
-  unordered_set<CoRWLock *> rwlocks_;         // 读写锁集合
-  unordered_set<CoCallOnce *> callonces_;     // CallOnce集合
+  ucontext_t main_;                                         // 保存主协程的上下文
+  bool is_master_{true};                                    // 是否主协程
+  int32_t slave_cid_{kInvalidCid};                          // 运行的从协程的id（运行从协程时才有效）
+  int32_t not_idle_count_{0};                               // 就绪、运行和挂起的从协程数
+  int32_t coroutine_count_{0};                              // 从协程总数
+  int32_t stack_size_{kStackSize};                          // 从协程栈大小，单位字节
+  int32_t max_concurrency_in_batch_;                        // 一个Batch中最大的并发数
+  Coroutine *coroutines_[kMaxCoroutineSize];                // 从协程数组池
+  Batch *batchs_[kMaxBatchSize];                            // 批量执行数组池
+  list<int> batch_finish_cid_list_;                         // 完成了批量执行的关联的从协程id
+  unordered_set<CoMutex *> mutexs_;                         // 互斥锁集合
+  unordered_set<CoCond *> conds_;                           // 条件变量集合
+  unordered_set<CoRWLock *> rwlocks_;                       // 读写锁集合
+  unordered_set<CoCallOnce *> call_onces_;                  // CallOnce集合
+  unordered_map<string, CoSingleFlight *> single_flights_;  // SingleFlight映射
 };
 }  // namespace MyCoroutine

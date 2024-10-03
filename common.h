@@ -122,7 +122,7 @@ typedef struct CoCallOnce {
 
 // SingleFlight
 typedef struct CoSingleFlight {
-  CallOnceState state;                     // CallOnce状态
+  SingleFlightState state;                 // SingleFlight状态
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoSingleFlight;
 
