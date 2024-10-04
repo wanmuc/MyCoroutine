@@ -88,6 +88,7 @@ class Schedule {
   void CoCallOnceClear(CoCallOnce &call_once);  // CallOnce清理
   template <typename Function, typename... Args>
   void CoCallOnceDo(CoCallOnce &call_once, Function &&func, Args &&...args) {
+    assert(not is_master_);
     if (call_once.state == CallOnceState::kInit) {
       call_once.state = CallOnceState::kInCall;
       func(forward<Args>(args)...);
@@ -104,8 +105,23 @@ class Schedule {
   void CoSingleFlightInit(CoSingleFlight &single_flight);
   void CoSingleFlightClear(CoSingleFlight &single_flight);
   template <typename Function, typename... Args>
-  void CoSingleFlightDo(CoSingleFlight &single_flight, Function &&func, Args &&...args) {
-    // TODO
+  void CoSingleFlightDo(CoSingleFlight &single_flight, string key, Function &&func, Args &&...args) {
+    assert(not is_master_);
+    if (single_flights_.find(key) == single_flights_.end()) {
+      single_flight.key = key;
+      single_flights_[key] = single_flight;
+    }
+    single_flight = single_flights_[key];
+    if (single_flight.state == SingleFlightState::kInit) {
+      single_flight.state = SingleFlightState::kInCall;
+      func(forward<Args>(args)...);
+      single_flight.state = SingleFlightState::kFinish;
+      return;
+    }
+    while (single_flight.state != SingleFlightState::kFinish) {
+      single_flight.suspend_cid_set.insert(slave_cid_);
+      CoroutineYield();
+    }
   }
   int CoSingleFlightResume();
 

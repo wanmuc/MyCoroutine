@@ -70,7 +70,8 @@ enum class CallOnceState {
  */
 enum class SingleFlightState {
   kInit = 1,    // 初始化
-  kFinish = 2,  // 完成
+  kInCall = 2,  // d
+  kFinish = 3,  // 完成
 };
 
 /**
@@ -122,6 +123,7 @@ typedef struct CoCallOnce {
 
 // SingleFlight
 typedef struct CoSingleFlight {
+  string key;                              // SingleFlight key
   SingleFlightState state;                 // SingleFlight状态
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoSingleFlight;
