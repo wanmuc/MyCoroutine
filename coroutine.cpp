@@ -79,6 +79,7 @@ void Schedule::Run() {
     CoRWLockResume();               // 唤醒等待读写锁的从协程
     CoroutineResume4BatchFinish();  // 唤醒Batch执行完的父从协程
     CoCallOnceResume();             // 唤醒等待CallOnce执行完毕的从协程
+    CoSingleFlightResume();         // 唤醒等待SingleFlight执行完毕的从协程
   }
 }
 
