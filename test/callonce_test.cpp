@@ -46,17 +46,16 @@ TEST_CASE(CoCallOnce_ALL) {
                            std::ref(incallvalue));
   schedule.CoroutineCreate(CallOnceFinish, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(finishvalue));
-  // TODO，新增注释，标记执行的逻辑。
-  schedule.CoroutineResume(0);
-  schedule.CoroutineResume(1);
-  schedule.CoroutineResume(2);
-  schedule.CoroutineResume(3);
-  ASSERT_EQ(incallvalue, 0);
-  schedule.CoroutineResume(0);
+  schedule.CoroutineResume(0);  // CallOnce状态进入kInit
+  schedule.CoroutineResume(1);  // 被挂起
+  schedule.CoroutineResume(2);  // 被挂起
+  schedule.CoroutineResume(3);  // 被挂起
+  ASSERT_EQ(incallvalue, 0);    // 因为CallOnceInCall都被挂起，所以incallvalue值还是0
+  schedule.CoroutineResume(0);  // CallOnce状态进入kFinish
   ASSERT_EQ(value, 1);
-  schedule.CoCallOnceResume();
+  schedule.CoCallOnceResume();  // 唤醒CallOnceInCall的3个从协程
   ASSERT_EQ(incallvalue, 3);
-  schedule.CoroutineResume(4);
+  schedule.CoroutineResume(4);  // 唤醒CallOnceFinish的从协程
   ASSERT_EQ(value, 1);
   ASSERT_EQ(finishvalue, 1);
 }
