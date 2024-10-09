@@ -44,7 +44,6 @@ TEST_CASE(CoSingleFlight_ALL) {
                            std::ref(incallvalue));
   schedule.CoroutineCreate(SingleFlightFinish, std::ref(schedule), std::ref(single_flight), std::ref(value),
                            std::ref(finishvalue));
-  schedule.CoroutineCreate(SingleFlightInit, std::ref(schedule), std::ref(single_flight), std::ref(value));
   schedule.CoroutineResume(0);  // single_flight状态进入kInit
   schedule.CoroutineResume(1);  // 被挂起
   schedule.CoroutineResume(2);  // 被挂起
@@ -52,13 +51,12 @@ TEST_CASE(CoSingleFlight_ALL) {
   ASSERT_EQ(incallvalue, 0);    // 因为SingleFlightInCall都被挂起，所以incallvalue值还是0
   schedule.CoroutineResume(0);  // single_flight状态进入kFinish
   ASSERT_EQ(value, 1);
-  schedule.CoSingleFlightResume();  // 唤醒SingleFlightInCall的3个从协程
+  schedule.CoSingleFlightResume();  // 唤醒SingleFlightInCall的3个从协程,single_flight状态重新进入kInit
   ASSERT_EQ(incallvalue, 3);
-  schedule.CoroutineResume(4);  // 唤醒SingleFlightFinish的从协程
+  schedule.CoroutineResume(4);  // 唤醒SingleFlightFinish的从协程，single_flight状态重新进入kInCall
   ASSERT_EQ(value, 1);
-  ASSERT_EQ(finishvalue, 1);
-  schedule.CoroutineResume(5);  // single_flight状态重新进入kInit
-  ASSERT_EQ(value, 1);
-  schedule.CoroutineResume(5);  // single_flight状态重新进入kFinish
+  ASSERT_EQ(finishvalue, 0);
+  schedule.CoroutineResume(4);  // 唤醒SingleFlightFinish的从协程，single_flight状态重新进入kFinish
   ASSERT_EQ(value, 2);
+  ASSERT_EQ(finishvalue, 1);
 }
