@@ -40,6 +40,7 @@ int main() {
   schedule.CoroutineCreate(SingleFlightInCall, std::ref(schedule), std::ref(single_flight), std::ref(value),
                            std::ref(incallvalue));
   schedule.Run();  // Run函数完成从协程的自行调度，直到所有的从协程都执行完
+  // 执行完之后，状态没从finish状态，扭转成init
   schedule.CoroutineCreate(SingleFlightFinish, std::ref(schedule), std::ref(single_flight), std::ref(value),
                            std::ref(finishvalue));
   schedule.Run();  // Run函数完成从协程的自行调度，直到所有的从协程都执行完
