@@ -109,9 +109,8 @@ class Schedule {
     assert(not is_master_);
     if (single_flights_.find(key) == single_flights_.end()) {
       single_flight.key = key;
-      single_flights_[key] = single_flight;
+      single_flights_[key] = &single_flight;
     }
-    single_flight = single_flights_[key];
     if (single_flight.state == SingleFlightState::kInit) {
       single_flight.state = SingleFlightState::kInCall;
       func(forward<Args>(args)...);
