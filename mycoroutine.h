@@ -99,6 +99,7 @@ class Schedule {
       call_once.suspend_cid_set.insert(slave_cid_);
       CoroutineYield();
     }
+    call_once.suspend_cid_set.erase(slave_cid_);
   }
   int CoCallOnceResume();
 
