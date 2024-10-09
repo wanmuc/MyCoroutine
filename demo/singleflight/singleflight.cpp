@@ -31,8 +31,7 @@ int main() {
   int value = 0;
   int incallvalue = 0;
   int finishvalue = 0;
-  MyCoroutine::Schedule schedule(1024);
-  MyCoroutine::SingleFlight single_flight(schedule);
+  SingleFlight single_flight(schedule);
   schedule.CoroutineCreate(SingleFlightInit, std::ref(schedule), std::ref(single_flight), std::ref(value));
   schedule.CoroutineCreate(SingleFlightInCall, std::ref(schedule), std::ref(single_flight), std::ref(value),
                            std::ref(incallvalue));

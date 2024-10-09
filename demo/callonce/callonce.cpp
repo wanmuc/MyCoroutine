@@ -32,7 +32,7 @@ int main() {
   int value = 0;
   int incallvalue = 0;
   int finishvalue = 0;
-  MyCoroutine::CallOnce callonce(schedule);
+  CallOnce callonce(schedule);
   schedule.CoroutineCreate(CallOnceInit, std::ref(schedule), std::ref(callonce), std::ref(value));
   schedule.CoroutineCreate(CallOnceInCall, std::ref(schedule), std::ref(callonce), std::ref(value),
                            std::ref(incallvalue));
