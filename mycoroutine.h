@@ -122,6 +122,7 @@ class Schedule {
       single_flight.suspend_cid_set.insert(slave_cid_);
       CoroutineYield();
     }
+    single_flight.suspend_cid_set.erase(slave_cid_);
   }
   int CoSingleFlightResume();
 
