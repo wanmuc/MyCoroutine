@@ -11,7 +11,7 @@ INCFLAGS = -I../../
 # 源文件目录
 SRCDIRS = .
 # 单独的源文件
-ALONE_SOURCES = ../../coroutine.cpp  ../../batch.cpp ../../mutex.cpp ../../rwlock.cpp ../../callonce.cpp ../../conditionvariable.cpp ../../localvariable.cpp
+ALONE_SOURCES = ../../coroutine.cpp  ../../batch.cpp ../../mutex.cpp ../../rwlock.cpp ../../callonce.cpp ../../singleflight.cpp ../../conditionvariable.cpp ../../localvariable.cpp
 
 # c编译器
 CC = gcc
