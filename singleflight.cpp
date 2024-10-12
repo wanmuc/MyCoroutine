@@ -17,12 +17,13 @@ int Schedule::CoSingleFlightResume() {
       item.second->state = SingleFlightState::kInit;
       continue;
     }
+    auto suspend_cid_set_temp = item.second->suspend_cid_set;
     // 唤醒所有等待的从协程
-    for (const auto& cid : item.second->suspend_cid_set) {
+    for (const auto& cid : suspend_cid_set_temp) {
       CoroutineResume(cid);
       count++;
     }
-    item.second->suspend_cid_set.clear();
+    assert(item.second->suspend_cid_set.size() == 0);
     // 状态自动扭转成kInit，这样相同key的SingleFlight在执行完之后，就可以再次执行（这个是和CallOnce的最大区别）
     item.second->state = SingleFlightState::kInit;
   }

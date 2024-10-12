@@ -15,12 +15,13 @@ int Schedule::CoCallOnceResume() {
   for (auto* call_once : call_onces_) {
     if (call_once->state != CallOnceState::kFinish) continue;  // 没执行完，不需要唤醒其他从协程
     if (call_once->suspend_cid_set.size() <= 0) continue;      // 是没有挂起的从协程，也不需要唤醒
+    auto suspend_cid_set_temp = call_once->suspend_cid_set;
     // 唤醒所有等待的从协程
-    for (const auto& cid : call_once->suspend_cid_set) {
+    for (const auto& cid : suspend_cid_set_temp) {
       CoroutineResume(cid);
       count++;
     }
-    call_once->suspend_cid_set.clear();
+    assert(call_once->suspend_cid_set.size() == 0);
   }
   return count;
 }
