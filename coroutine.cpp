@@ -58,6 +58,7 @@ Schedule::~Schedule() {
   assert(mutexs_.size() == 0);
   assert(conds_.size() == 0);
   assert(rwlocks_.size() == 0);
+  assert(semaphores_.size() == 0);
   assert(call_onces_.size() == 0);
   assert(single_flights_.size() == 0);
 }
@@ -79,10 +80,11 @@ void Schedule::Run() {
         continue;
       }
     }
+    CoroutineResume4BatchFinish();  // 唤醒Batch执行完的父从协程
     CoMutexResume();                // 唤醒等待互斥锁的从协程
     CoCondResume();                 // 唤醒等待条件变量的从协程
     CoRWLockResume();               // 唤醒等待读写锁的从协程
-    CoroutineResume4BatchFinish();  // 唤醒Batch执行完的父从协程
+    CoSemaphoreResume();            // 唤醒等待信号量的从协程
     CoCallOnceResume();             // 唤醒等待CallOnce执行完毕的从协程
     CoSingleFlightResume();         // 唤醒等待SingleFlight执行完毕的从协程
   }

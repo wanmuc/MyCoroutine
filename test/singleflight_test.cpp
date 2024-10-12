@@ -1,9 +1,10 @@
+#include "singleflight.h"
+
 #include <assert.h>
 
 #include <iostream>
 
 #include "UTestCore.h"
-#include "singleflight.h"
 #include "mycoroutine.h"
 using namespace std;
 
@@ -18,11 +19,13 @@ void SingleFlightFunc(MyCoroutine::Schedule &schedule, int &value) {
 void SingleFlightInit(MyCoroutine::Schedule &schedule, MyCoroutine::SingleFlight &single_flight, int &value) {
   single_flight.Do("test", SingleFlightFunc, std::ref(schedule), std::ref(value));
 }
-void SingleFlightInCall(MyCoroutine::Schedule &schedule, MyCoroutine::SingleFlight &single_flight, int &value, int &incallvalue) {
+void SingleFlightInCall(MyCoroutine::Schedule &schedule, MyCoroutine::SingleFlight &single_flight, int &value,
+                        int &incallvalue) {
   single_flight.Do("test", SingleFlightFunc, std::ref(schedule), std::ref(value));
   incallvalue++;
 }
-void SingleFlightFinish(MyCoroutine::Schedule &schedule, MyCoroutine::SingleFlight &single_flight, int &value, int &finishvalue) {
+void SingleFlightFinish(MyCoroutine::Schedule &schedule, MyCoroutine::SingleFlight &single_flight, int &value,
+                        int &finishvalue) {
   single_flight.Do("test", SingleFlightFunc, std::ref(schedule), std::ref(value));
   finishvalue++;
 }
