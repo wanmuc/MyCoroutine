@@ -134,6 +134,12 @@ typedef struct CoCond {
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoCond;
 
+// 协程信号量
+typedef struct CoSemaphore {
+  int64_t value;                          // 信号量的计数值
+  unordered_set<int32_t> suspend_cid_set; // 被挂起的从协程id查重集合
+} CoSemaphore;
+
 // 协程结构体
 typedef struct Coroutine {
   int32_t cid{kInvalidCid};                    // 从协程id

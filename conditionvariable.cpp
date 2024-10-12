@@ -3,31 +3,31 @@
 #include "mycoroutine.h"
 
 namespace MyCoroutine {
-void Schedule::CoCondInit(CoCond &co_cond) {
-  co_cond.state = CondState::kNotifyNone;
-  conds_.insert(&co_cond);
+void Schedule::CoCondInit(CoCond &cond) {
+  cond.state = CondState::kNotifyNone;
+  conds_.insert(&cond);
 }
 
-void Schedule::CoCondClear(CoCond &co_cond) { conds_.erase(&co_cond); }
+void Schedule::CoCondClear(CoCond &cond) { conds_.erase(&cond); }
 
-void Schedule::CoCondWait(CoCond &co_cond, std::function<bool()> pred) {
+void Schedule::CoCondWait(CoCond &cond, std::function<bool()> pred) {
   while (not pred()) {
     assert(not is_master_);
     // 更新因为等待条件变量而被挂起的从协程
-    co_cond.suspend_cid_set.insert(slave_cid_);
+    cond.suspend_cid_set.insert(slave_cid_);
     CoroutineYield();
   }
   // 被唤醒后，就把当前从协程从阻塞集合中删除
-  co_cond.suspend_cid_set.erase(slave_cid_);
+  cond.suspend_cid_set.erase(slave_cid_);
 }
 
-void Schedule::CoCondNotifyOne(CoCond &co_cond) {
-  if (co_cond.state == CondState::kNotifyNone) {
-    co_cond.state = CondState::kNotifyOne;
+void Schedule::CoCondNotifyOne(CoCond &cond) {
+  if (cond.state == CondState::kNotifyNone) {
+    cond.state = CondState::kNotifyOne;
   }
 }
 
-void Schedule::CoCondNotifyAll(CoCond &co_cond) { co_cond.state = CondState::kNotifyAll; }
+void Schedule::CoCondNotifyAll(CoCond &cond) { cond.state = CondState::kNotifyAll; }
 
 int Schedule::CoCondResume() {
   assert(is_master_);

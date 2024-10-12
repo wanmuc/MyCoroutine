@@ -84,6 +84,12 @@ class Schedule {
   void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
   void CoRWLockResume();
 
+  void CoSemaphoreInit(CoSemaphore &semaphore, int64_t value); // 信号量初始化
+  void CoSemaphoreClear(CoSemaphore &semaphore); // 信号量清理
+  void CoSemaphorePost(CoSemaphore &semaphore); // （V 操作）释放信号量
+  void CoSemaphoreWait(CoSemaphore &semaphore); // （P 操作）请求信号量
+  int CoSemaphoreResume();
+
   void CoCallOnceInit(CoCallOnce &call_once);   // CallOnce初始化
   void CoCallOnceClear(CoCallOnce &call_once);  // CallOnce清理
   template <typename Function, typename... Args>
@@ -145,6 +151,7 @@ class Schedule {
   unordered_set<CoMutex *> mutexs_;                         // 互斥锁集合
   unordered_set<CoCond *> conds_;                           // 条件变量集合
   unordered_set<CoRWLock *> rwlocks_;                       // 读写锁集合
+  unordered_set<CoSemaphore *> semaphores_;                 // 信号量集合
   unordered_set<CoCallOnce *> call_onces_;                  // CallOnce集合
   unordered_map<string, CoSingleFlight *> single_flights_;  // SingleFlight映射
 };
