@@ -31,8 +31,8 @@ int Schedule::CoSemaphoreResume() {
   for (auto semaphore : semaphores_) {
     assert(semaphore->value >= 0);
     if (semaphore->value == 0) continue;
-    auto suspend_cid_set_temp = semaphore->suspend_cid_set;
-    for (auto cid : suspend_cid_set_temp) {
+    auto cid_set = semaphore->suspend_cid_set;
+    for (const auto cid : cid_set) {
       count++;
       semaphore->value--;
       CoroutineResume(cid);
