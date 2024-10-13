@@ -35,11 +35,16 @@ TEST_CASE(CoSemaphore_ALL) {
   int value = 0;
   queue<int> q;
   MyCoroutine::Schedule schedule(1024);
-  MyCoroutine::Semaphore sem(schedule, 0);
+  MyCoroutine::Semaphore sem(schedule, 100);
+  for (int i = 0; i < 100; i++) {
+    q.push(0);
+  }
+  // 2个 Producer 和 10个 Consumer
   schedule.CoroutineCreate(Producer, std::ref(schedule), std::ref(sem), std::ref(q));
   schedule.CoroutineCreate(Producer, std::ref(schedule), std::ref(sem), std::ref(q));
-  schedule.CoroutineCreate(Consumer, std::ref(schedule), std::ref(sem), std::ref(q), std::ref(value));
-  schedule.CoroutineCreate(Consumer, std::ref(schedule), std::ref(sem), std::ref(q), std::ref(value));
+  for (int i = 0; i < 10; i++) {
+    schedule.CoroutineCreate(Consumer, std::ref(schedule), std::ref(sem), std::ref(q), std::ref(value));
+  }
   schedule.Run();
   ASSERT_EQ(q.size(), 0);
   ASSERT_EQ(value, 10100);
