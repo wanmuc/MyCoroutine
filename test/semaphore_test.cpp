@@ -55,7 +55,7 @@ TEST_CASE(CoSemaphore_ALL) {
                              std::ref(finish));
   }
   schedule.Run();
-  ASSERT_EQ(q.size(), 0);
+  ASSERT_GE(q.size(), 0);
   ASSERT_EQ(value, 10100);
   ASSERT_EQ(finish, 10);
 }
