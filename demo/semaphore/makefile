@@ -1,4 +1,4 @@
-TARGET = singleflight
+TARGET = semaphore
 
 # c编译选项
 CFLAGS = -g -O2 -Wall -Werror -pipe -m64
@@ -11,7 +11,7 @@ INCFLAGS = -I../../
 # 源文件目录
 SRCDIRS = . ../
 # 单独的源文件
-ALONE_SOURCES = 
+ALONE_SOURCES =
 # c编译器
 CC = gcc
 # c++编译器
