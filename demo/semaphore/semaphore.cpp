@@ -33,7 +33,7 @@ void Consumer(MyCoroutine::Schedule &schedule, MyCoroutine::Semaphore &sem, queu
   finish++;
 }
 
-int main {
+int main() {
   int value = 0;
   int finish = 0;
   queue<int> q;
