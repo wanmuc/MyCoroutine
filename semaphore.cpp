@@ -33,6 +33,7 @@ int Schedule::CoSemaphoreResume() {
     if (semaphore->value == 0) continue;
     auto suspend_cid_set_temp = semaphore->suspend_cid_set;
     for (auto cid : suspend_cid_set_temp) {
+      count++;
       semaphore->value--;
       CoroutineResume(cid);
       if (semaphore->value <= 0) {
