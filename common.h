@@ -115,19 +115,6 @@ typedef struct CoRWLock {
   list<pair<RWLockType, int32_t>> suspend_list;  // 因为等待写锁而被挂起的从协程信息（锁类型+从协程id）
 } CoRWLock;
 
-// CallOnce
-typedef struct CoCallOnce {
-  CallOnceState state;                     // CallOnce状态
-  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
-} CoCallOnce;
-
-// SingleFlight
-typedef struct CoSingleFlight {
-  string key;                              // SingleFlight key
-  SingleFlightState state;                 // SingleFlight状态
-  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
-} CoSingleFlight;
-
 // 协程条件变量
 typedef struct CoCond {
   CondState state;                         // 条件变量状态
@@ -139,6 +126,26 @@ typedef struct CoSemaphore {
   int64_t value;                          // 信号量的计数值
   unordered_set<int32_t> suspend_cid_set; // 被挂起的从协程id查重集合
 } CoSemaphore;
+
+// Channel
+typedef struct CoChannel {
+  CoSemaphore idle; // 计数信号量，表示缓冲区中空闲的大小
+  CoSemaphore fill; // 计数信号量，表示缓冲区中填充的大小
+  list<void *> buffer;
+} CoChannel;
+
+// SingleFlight
+typedef struct CoSingleFlight {
+  string key;                              // SingleFlight key
+  SingleFlightState state;                 // SingleFlight状态
+  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
+} CoSingleFlight;
+
+// CallOnce
+typedef struct CoCallOnce {
+  CallOnceState state;                     // CallOnce状态
+  unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
+} CoCallOnce;
 
 // 协程结构体
 typedef struct Coroutine {
