@@ -43,8 +43,4 @@ int Schedule::CoSemaphoreResume() {
   }
   return count;
 }
-
-void Semaphore::Post() { schedule_.CoSemaphorePost(co_semaphore_); }
-
-void Semaphore::Wait() { schedule_.CoSemaphoreWait(co_semaphore_); }
 }  // namespace MyCoroutine
