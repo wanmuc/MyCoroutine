@@ -43,9 +43,9 @@ int Schedule::CoCondResume() {
       CoroutineResume(cid);  // 每次只能唤醒等待队列中的一个从协程，采用先进先出的策略
     } else if (cond->state == CondState::kNotifyAll) {
       // 唤醒所有等待的从协程
-      unordered_set<int32_t> cid_set = cond->suspend_cid_set;
+      auto cid_set = cond->suspend_cid_set;
       cond->suspend_cid_set.clear();  // 需要在这里就清空这个集合，因为被唤醒的从协程可能重新再阻塞
-      for (const auto &cid : cid_set) {
+      for (const auto cid : cid_set) {
         CoroutineResume(cid);
         count++;
       }

@@ -17,9 +17,9 @@ int Schedule::CoSingleFlightResume() {
       item.second->state = SingleFlightState::kInit;
       continue;
     }
-    auto suspend_cid_set_temp = item.second->suspend_cid_set;
+    auto cid_set = item.second->suspend_cid_set;
     // 唤醒所有等待的从协程
-    for (const auto& cid : suspend_cid_set_temp) {
+    for (const auto cid : cid_set) {
       CoroutineResume(cid);
       count++;
     }

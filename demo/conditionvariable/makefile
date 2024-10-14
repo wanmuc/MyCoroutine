@@ -9,10 +9,9 @@ LDFLAGS =
 # 头文件目录
 INCFLAGS = -I../../
 # 源文件目录
-SRCDIRS = .
+SRCDIRS = . ../../
 # 单独的源文件
-ALONE_SOURCES = ../../coroutine.cpp  ../../batch.cpp ../../mutex.cpp ../../rwlock.cpp ../../callonce.cpp ../../singleflight.cpp ../../conditionvariable.cpp
-
+ALONE_SOURCES =
 # c编译器
 CC = gcc
 # c++编译器

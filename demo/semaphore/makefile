@@ -1,4 +1,4 @@
-TARGET = singleflight
+TARGET = semaphore
 
 # c编译选项
 CFLAGS = -g -O2 -Wall -Werror -pipe -m64
