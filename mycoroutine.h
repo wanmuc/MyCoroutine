@@ -84,7 +84,7 @@ class Schedule {
   void CoRWLockRdUnLock(CoRWLock &rwlock);  // 解读锁
   void CoRWLockResume();
 
-  void CoSemaphoreInit(CoSemaphore &semaphore, int64_t value);  // 信号量初始化
+  void CoSemaphoreInit(CoSemaphore &semaphore, int64_t value = 0);  // 信号量初始化
   void CoSemaphoreClear(CoSemaphore &semaphore);                // 信号量清理
   void CoSemaphorePost(CoSemaphore &semaphore);                 // （V 操作）释放信号量
   void CoSemaphoreWait(CoSemaphore &semaphore);                 // （P 操作）请求信号量
