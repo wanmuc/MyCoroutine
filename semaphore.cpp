@@ -34,7 +34,6 @@ int Schedule::CoSemaphoreResume() {
     auto cid_set = semaphore->suspend_cid_set;
     for (const auto cid : cid_set) {
       count++;
-      semaphore->value--;
       CoroutineResume(cid);
       if (semaphore->value <= 0) {
         break;
