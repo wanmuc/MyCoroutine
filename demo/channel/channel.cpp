@@ -30,8 +30,8 @@ int main() {
   // 创建一个协程调度对象，并自动生成大小为1024的协程池
   Schedule schedule(1024);
   Channel<int> channel(schedule, 10);
-  schedule.CoroutineCreate(Producer, std::ref(schedule), std::ref(schedule));
-  schedule.CoroutineCreate(Consumer, std::ref(schedule), std::ref(schedule));
+  schedule.CoroutineCreate(Producer, std::ref(schedule), std::ref(channel));
+  schedule.CoroutineCreate(Consumer, std::ref(schedule), std::ref(channel));
   schedule.Run();  // Run函数完成从协程的自行调度，直到所有的从协程都执行完
   return 0;
 }
