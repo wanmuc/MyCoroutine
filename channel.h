@@ -27,7 +27,7 @@ public:
     Type *data;
     // 等待缓存区被填充
     schedule_.CoSemaphoreWait(co_channel_.fill);
-    data = co_channel_.buffer.front();
+    data = (Type *)co_channel_.buffer.front();
     co_channel_.buffer.pop_front();
     // 发送缓冲区空闲信号
     schedule_.CoSemaphorePost(co_channel_.idle);
