@@ -56,11 +56,4 @@ int Schedule::CoCondResume() {
   }
   return count;
 }
-
-void ConditionVariable::NotifyOne() { schedule_.CoCondNotifyOne(co_cond_); }
-
-void ConditionVariable::NotifyAll() { schedule_.CoCondNotifyAll(co_cond_); }
-
-void ConditionVariable::Wait(std::function<bool()> pred) { schedule_.CoCondWait(co_cond_, pred); }
-
 }  // namespace MyCoroutine
