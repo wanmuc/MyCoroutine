@@ -129,8 +129,8 @@ typedef struct CoSemaphore {
 
 // 协程Channel
 typedef struct CoChannel {
-  CoSemaphore idle; // 计数信号量，表示缓冲区中空闲的大小
-  CoSemaphore fill; // 计数信号量，表示缓冲区中填充的大小
+  CoSemaphore idle; // 计数信号量，表示缓冲区中空闲出来的大小
+  CoSemaphore fill; // 计数信号量，表示缓冲区中已经被填充的大小
   list<void *> buffer; // 通用数据缓冲区
 } CoChannel;
 
