@@ -127,21 +127,21 @@ typedef struct CoSemaphore {
   unordered_set<int32_t> suspend_cid_set; // 被挂起的从协程id查重集合
 } CoSemaphore;
 
-// Channel
+// 协程Channel
 typedef struct CoChannel {
   CoSemaphore idle; // 计数信号量，表示缓冲区中空闲的大小
   CoSemaphore fill; // 计数信号量，表示缓冲区中填充的大小
-  list<void *> buffer;
+  list<void *> buffer; // 通用数据缓冲区
 } CoChannel;
 
-// SingleFlight
+// 协程SingleFlight
 typedef struct CoSingleFlight {
   string key;                              // SingleFlight key
   SingleFlightState state;                 // SingleFlight状态
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoSingleFlight;
 
-// CallOnce
+// 协程CallOnce
 typedef struct CoCallOnce {
   CallOnceState state;                     // CallOnce状态
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
