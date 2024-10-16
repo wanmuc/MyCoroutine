@@ -12,6 +12,7 @@
 ├── batch.cpp
 ├── callonce.cpp
 ├── callonce.h
+├── channel.h
 ├── common.h
 ├── conditionvariable.cpp
 ├── conditionvariable.h
@@ -19,6 +20,7 @@
 ├── demo
 │   ├── batchrun
 │   ├── callonce
+│   ├── channel
 │   ├── conditionvariable
 │   ├── helloworld
 │   ├── localvariable
@@ -34,6 +36,8 @@
 ├── readme.md
 ├── rwlock.cpp
 ├── rwlock.h
+├── semaphore.cpp
+├── semaphore.h
 ├── singleflight.cpp
 ├── singleflight.h
 ├── test
@@ -46,6 +50,7 @@
 │   ├── mutex_test.cpp
 │   ├── MyCoroutineTest
 │   ├── rwlock_test.cpp
+│   ├── semaphore_test.cpp
 │   ├── singleflight_test.cpp
 │   └── UTestCore.h
 └── waitgroup.h
@@ -53,6 +58,7 @@
 
 - batch.cpp：批量执行的实现
 - callonce.h、callonce.cpp：协程CallOnce特性的实现
+- channel.h：协程Channel特性的实现
 - common.h：公共结构体、枚举、常量的定义
 - conditionvariable.h、conditionvariable.cpp：协程条件变量的实现
 - coroutine.cpp：协程基础API的实现
@@ -61,6 +67,7 @@
 - mutex.h、mutex.cpp：协程互斥量的实现
 - mycoroutine.h：协程库主要接口的声明
 - rwlock.h、rwlock.cpp：协程读写锁特性的实现
+- semaphore.h、semaphore.cpp：协程信号量特性的实现
 - singleflight.h、singleflight.cpp：协程SingleFlight特性的实现
 - test目录：单元测试代码目录，里面有每个特性的测试代码
 - waitgroup.h：批量执行的WaitGroup封装
@@ -90,6 +97,10 @@
 - 协程读写锁。
 
 - 协程条件变量。
+
+- 协程信号量
+
+- Channel。
 
 - SingleFlight。
 
