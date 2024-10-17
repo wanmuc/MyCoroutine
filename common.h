@@ -70,7 +70,7 @@ enum class CallOnceState {
  */
 enum class SingleFlightState {
   kInit = 1,    // 初始化
-  kInCall = 2,  // d
+  kInCall = 2,  // 调用中
   kFinish = 3,  // 完成
 };
 
@@ -130,7 +130,7 @@ typedef struct CoSemaphore {
 // 协程Channel
 typedef struct CoChannel {
   CoSemaphore idle; // 计数信号量，表示缓冲区中空闲出来的大小
-  CoSemaphore fill; // 计数信号量，表示缓冲区中已经被填充的大小
+  CoSemaphore fill; // 计数信号量，表示缓冲区中已被填充的大小
   list<void *> buffer; // 通用数据缓冲区
 } CoChannel;
 
