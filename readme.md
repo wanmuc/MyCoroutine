@@ -100,9 +100,20 @@ int main() {
 
 更多的示例代码，详见demo子目录内容，demo目录下的每个子目录都是一个单独的示例程序。
 
-# 知乎上的系列文章
+# 知乎上介绍本库的系列文章
 
-- 协程必知必会-系列1-协程是什么(https://zhuanlan.zhihu.com/p/717419078)
+- [协程必知必会-系列1-协程是什么](https://zhuanlan.zhihu.com/p/717419078)
+- [协程必知必会-系列2-协程如何实现](https://zhuanlan.zhihu.com/p/719298566)
+- [协程必知必会-系列3-批量并发执行](https://zhuanlan.zhihu.com/p/721026660)
+- [协程必知必会-系列4-协程本地变量](https://zhuanlan.zhihu.com/p/721890237)
+- [协程必知必会-系列5-协程互斥锁](https://zhuanlan.zhihu.com/p/722216866)
+- [协程必知必会-系列6-协程读写锁](https://zhuanlan.zhihu.com/p/911995023)
+- [协程必知必会-系列7-协程条件变量](https://zhuanlan.zhihu.com/p/998411846)
+- [协程必知必会-系列8-协程信号量](https://zhuanlan.zhihu.com/p/1210540508)
+- [协程必知必会-系列9-Channel](https://zhuanlan.zhihu.com/p/1355321479)
+- [协程必知必会-系列10-SingleFlight](https://zhuanlan.zhihu.com/p/1620898868)
+- [协程必知必会-系列11-CallOnce](https://zhuanlan.zhihu.com/p/1673369654)
+- [协程必知必会-加餐1-协程Sleep](https://zhuanlan.zhihu.com/p/6177198171)
 
 
 # 微信公众号
