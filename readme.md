@@ -7,69 +7,21 @@
 # 目录结构说明
 
 本仓库的目录结构说明如下。
-```
-.
-├── batch.cpp
-├── callonce.cpp
-├── callonce.h
-├── channel.h
-├── common.h
-├── conditionvariable.cpp
-├── conditionvariable.h
-├── coroutine.cpp
-├── demo
-│   ├── batchrun
-│   ├── callonce
-│   ├── channel
-│   ├── conditionvariable
-│   ├── helloworld
-│   ├── localvariable
-│   ├── mutex
-│   ├── rwlock
-│   └── singleflight
-├── localvariable.cpp
-├── localvariable.h
-├── mp_account.png
-├── mutex.cpp
-├── mutex.h
-├── mycoroutine.h
-├── readme.md
-├── rwlock.cpp
-├── rwlock.h
-├── semaphore.cpp
-├── semaphore.h
-├── singleflight.cpp
-├── singleflight.h
-├── test
-│   ├── batch_test.cpp
-│   ├── callonce_test.cpp
-│   ├── conditionvariable_test.cpp
-│   ├── coroutine_test.cpp
-│   ├── localvariable_test.cpp
-│   ├── makefile
-│   ├── mutex_test.cpp
-│   ├── MyCoroutineTest
-│   ├── rwlock_test.cpp
-│   ├── semaphore_test.cpp
-│   ├── singleflight_test.cpp
-│   └── UTestCore.h
-└── waitgroup.h
-```
 
+- demo目录：所有示例程序的目录，每个子目录对应一个示例程序
+- test目录：单元测试代码目录，里面有每个特性的测试代码
 - batch.cpp：批量执行的实现
 - callonce.h、callonce.cpp：协程CallOnce特性的实现
 - channel.h：协程Channel特性的实现
 - common.h：公共结构体、枚举、常量的定义
 - conditionvariable.h、conditionvariable.cpp：协程条件变量的实现
-- coroutine.cpp：协程基础API的实现
-- demo目录：所有示例程序的目录，每个子目录对应一个示例程序
+- coroutine.cpp：协程核心API的实现
 - localvariable.h、localvariable.cpp：协程本地变量的实现
 - mutex.h、mutex.cpp：协程互斥量的实现
 - mycoroutine.h：协程库主要接口的声明
 - rwlock.h、rwlock.cpp：协程读写锁特性的实现
 - semaphore.h、semaphore.cpp：协程信号量特性的实现
 - singleflight.h、singleflight.cpp：协程SingleFlight特性的实现
-- test目录：单元测试代码目录，里面有每个特性的测试代码
 - waitgroup.h：批量执行的WaitGroup封装
 
 # 协程调度模型
@@ -98,7 +50,9 @@
 
 - 协程条件变量。
 
-- 协程信号量
+- 协程信号量。
+
+- 协程sleep。
 
 - Channel。
 
@@ -145,6 +99,10 @@ int main() {
 本仓库的所有代码都是使用make命令来编译，采用的是通用的makefile编译脚本。
 
 更多的示例代码，详见demo子目录内容，demo目录下的每个子目录都是一个单独的示例程序。
+
+# 知乎上的系列文章
+
+- 协程必知必会-系列1-协程是什么(https://zhuanlan.zhihu.com/p/717419078)
 
 
 # 微信公众号
