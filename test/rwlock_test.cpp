@@ -1,4 +1,4 @@
-#include "rwlock.h"
+#include "sync/rwlock.h"
 
 #include <assert.h>
 

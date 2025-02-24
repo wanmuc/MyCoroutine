@@ -10,6 +10,7 @@
 
 - demo目录：所有示例程序的目录，每个子目录对应一个示例程序
 - test目录：单元测试代码目录，里面有每个特性的测试代码
+- sync目录：同步源语代码目录
 - batch.cpp：批量执行的实现
 - callonce.h、callonce.cpp：协程CallOnce特性的实现
 - channel.h：协程Channel特性的实现
@@ -19,10 +20,8 @@
 - localvariable.h、localvariable.cpp：协程本地变量的实现
 - mutex.h、mutex.cpp：协程互斥量的实现
 - mycoroutine.h：协程库主要接口的声明
-- rwlock.h、rwlock.cpp：协程读写锁特性的实现
 - semaphore.h、semaphore.cpp：协程信号量特性的实现
 - singleflight.h、singleflight.cpp：协程SingleFlight特性的实现
-- waitgroup.h：批量执行的WaitGroup封装
 
 # 协程调度模型
 
