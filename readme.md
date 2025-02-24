@@ -10,7 +10,7 @@
 
 - demo目录：所有示例程序的目录，每个子目录对应一个示例程序
 - test目录：单元测试代码目录，里面有每个特性的测试代码
-- sync目录：同步源语代码目录
+- sync目录：同步原语代码目录
 - batch.cpp：批量执行的实现
 - callonce.h、callonce.cpp：协程CallOnce特性的实现
 - channel.h：协程Channel特性的实现
