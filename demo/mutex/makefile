@@ -9,7 +9,7 @@ LDFLAGS =
 # 头文件目录
 INCFLAGS = -I../../
 # 源文件目录
-SRCDIRS = . ../../
+SRCDIRS = . ../../ ../../sync
 # 单独的源文件
 ALONE_SOURCES =
 # c编译器
