@@ -18,7 +18,6 @@
 - conditionvariable.h、conditionvariable.cpp：协程条件变量的实现
 - coroutine.cpp：协程核心API的实现
 - localvariable.h、localvariable.cpp：协程本地变量的实现
-- mutex.h、mutex.cpp：协程互斥量的实现
 - mycoroutine.h：协程库主要接口的声明
 - semaphore.h、semaphore.cpp：协程信号量特性的实现
 - singleflight.h、singleflight.cpp：协程SingleFlight特性的实现

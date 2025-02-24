@@ -1,4 +1,4 @@
-#include "mutex.h"
+#include "sync/mutex.h"
 
 #include <assert.h>
 
