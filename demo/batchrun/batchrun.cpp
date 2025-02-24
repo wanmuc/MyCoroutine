@@ -1,5 +1,5 @@
 #include "mycoroutine.h"
-#include "waitgroup.h"
+#include "sync/waitgroup.h"
 #include <iostream>
 using namespace std;
 using namespace MyCoroutine;
