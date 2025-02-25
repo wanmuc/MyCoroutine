@@ -1,4 +1,4 @@
-#include "semaphore.h"
+#include "sync/semaphore.h"
 
 #include <assert.h>
 

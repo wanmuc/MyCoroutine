@@ -15,11 +15,9 @@
 - callonce.h、callonce.cpp：协程CallOnce特性的实现
 - channel.h：协程Channel特性的实现
 - common.h：公共结构体、枚举、常量的定义
-- conditionvariable.h、conditionvariable.cpp：协程条件变量的实现
 - coroutine.cpp：协程核心API的实现
 - localvariable.h、localvariable.cpp：协程本地变量的实现
 - mycoroutine.h：协程库主要接口的声明
-- semaphore.h、semaphore.cpp：协程信号量特性的实现
 - singleflight.h、singleflight.cpp：协程SingleFlight特性的实现
 
 # 协程调度模型
