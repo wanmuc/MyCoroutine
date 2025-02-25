@@ -148,6 +148,16 @@ typedef struct CoCallOnce {
   unordered_set<int32_t> suspend_cid_set;  // 被挂起的从协程id查重集合
 } CoCallOnce;
 
+// 协程的同步原语
+typedef struct CoSync {
+  unordered_set<CoMutex *> mutexs;                         // 互斥锁集合
+  unordered_set<CoCond *> conds;                           // 条件变量集合
+  unordered_set<CoRWLock *> rwlocks;                       // 读写锁集合
+  unordered_set<CoSemaphore *> semaphores;                 // 信号量集合
+  unordered_set<CoCallOnce *> call_onces;                  // CallOnce集合
+  unordered_map<string, CoSingleFlight *> single_flights;  // SingleFlight映射
+} CoSync;
+
 // 协程结构体
 typedef struct Coroutine {
   int32_t cid{kInvalidCid};                    // 从协程id

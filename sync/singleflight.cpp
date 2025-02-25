@@ -5,12 +5,12 @@ void Schedule::CoSingleFlightInit(CoSingleFlight& single_flight) {
   single_flight.state = SingleFlightState::kInit;  // SingleFlight状态
 }
 
-void Schedule::CoSingleFlightClear(CoSingleFlight& single_flight) { single_flights_.erase(single_flight.key); }
+void Schedule::CoSingleFlightClear(CoSingleFlight& single_flight) { cosync_.single_flights.erase(single_flight.key); }
 
 int Schedule::CoSingleFlightResume() {
   assert(is_master_);
   int count = 0;
-  for (auto item : single_flights_) {
+  for (auto item : cosync_.single_flights) {
     if (item.second->state != SingleFlightState::kFinish) continue;  // 没执行完，不需要唤醒其他从协程
     if (item.second->suspend_cid_set.size() <= 0) {
       // 状态自动扭转成kInit，这样相同key的SingleFlight在执行完之后，就可以再次执行（这个是和CallOnce的最大区别）

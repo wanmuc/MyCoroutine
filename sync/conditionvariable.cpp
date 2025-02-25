@@ -6,10 +6,10 @@ namespace MyCoroutine {
 void Schedule::CoCondInit(CoCond &cond) {
   cond.state = CondState::kNotifyNone;
   cond.notify_count = 0;
-  conds_.insert(&cond);
+  cosync_.conds.insert(&cond);
 }
 
-void Schedule::CoCondClear(CoCond &cond) { conds_.erase(&cond); }
+void Schedule::CoCondClear(CoCond &cond) { cosync_.conds.erase(&cond); }
 
 void Schedule::CoCondWait(CoCond &cond, std::function<bool()> pred) {
   while (not pred()) {
@@ -41,7 +41,7 @@ void Schedule::CoCondNotifyAll(CoCond &cond) {
 int Schedule::CoCondResume() {
   assert(is_master_);
   int count = 0;
-  for (auto *cond : conds_) {
+  for (auto *cond : cosync_.conds) {
     if (cond->state == CondState::kNotifyNone) continue;  // 没有通知，不需要互相等待的从协程
     // 通知了，但是没有挂起的从协程，也不需要唤醒，注意这里不调整通知的状态
     if (cond->suspend_cid_set.size() <= 0) continue;

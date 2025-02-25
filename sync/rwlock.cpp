@@ -4,11 +4,11 @@ namespace MyCoroutine {
 void Schedule::CoRWLockInit(CoRWLock &rwlock) {
   rwlock.lock_state = RWLockState::kUnLock;
   rwlock.hold_write_cid = kInvalidCid;
-  assert(rwlocks_.find(&rwlock) == rwlocks_.end());
-  rwlocks_.insert(&rwlock);
+  assert(cosync_.rwlocks.find(&rwlock) == cosync_.rwlocks.end());
+  cosync_.rwlocks.insert(&rwlock);
 }
 
-void Schedule::CoRWLockClear(CoRWLock &rwlock) { rwlocks_.erase(&rwlock); }
+void Schedule::CoRWLockClear(CoRWLock &rwlock) { cosync_.rwlocks.erase(&rwlock); }
 
 void Schedule::CoRWLockWrLock(CoRWLock &rwlock) {
   while (true) {
@@ -85,7 +85,7 @@ void Schedule::CoRWLockRdUnLock(CoRWLock &rwlock) {
 
 void Schedule::CoRWLockResume() {
   assert(is_master_);
-  for (auto *rwlock : rwlocks_) {
+  for (auto *rwlock : cosync_.rwlocks) {
     if (rwlock->lock_state == RWLockState::kWriteLock || rwlock->lock_state == RWLockState::kReadLock) {
       // 这里读锁也不唤醒是因为，因为读锁而被挂起的只有写锁，故唤醒了写锁的协程，这个协程也会再度被挂起
       continue;  // 写锁或者读锁锁定，不需要唤醒其他从协程

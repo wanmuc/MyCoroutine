@@ -4,11 +4,11 @@ namespace MyCoroutine {
 void Schedule::CoMutexInit(CoMutex& mutex) {
   mutex.lock = false;
   mutex.hold_cid = kInvalidCid;
-  assert(mutexs_.find(&mutex) == mutexs_.end());
-  mutexs_.insert(&mutex);
+  assert(cosync_.mutexs.find(&mutex) == cosync_.mutexs.end());
+  cosync_.mutexs.insert(&mutex);
 }
 
-void Schedule::CoMutexClear(CoMutex& mutex) { mutexs_.erase(&mutex); }
+void Schedule::CoMutexClear(CoMutex& mutex) { cosync_.mutexs.erase(&mutex); }
 
 void Schedule::CoMutexLock(CoMutex& mutex) {
   while (true) {
@@ -55,7 +55,7 @@ void Schedule::CoMutexUnLock(CoMutex& mutex) {
 
 void Schedule::CoMutexResume() {
   assert(is_master_);
-  for (auto* mutex : mutexs_) {
+  for (auto* mutex : cosync_.mutexs) {
     if (mutex->lock) continue;                          // 锁没释放，不需要唤醒其他从协程
     if (mutex->suspend_cid_list.size() <= 0) continue;  // 锁已经释放了，但是没有挂起的从协程，也不需要唤醒
     int32_t cid = mutex->suspend_cid_list.front();

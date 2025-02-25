@@ -1,4 +1,4 @@
-#include "semaphore.h"
+#include "sync/semaphore.h"
 
 #include "mycoroutine.h"
 
@@ -6,10 +6,10 @@ namespace MyCoroutine {
 void Schedule::CoSemaphoreInit(CoSemaphore &semaphore, int64_t value) {
   assert(value >= 0);
   semaphore.value = value;
-  semaphores_.insert(&semaphore);
+  cosync_.semaphores.insert(&semaphore);
 }
 
-void Schedule::CoSemaphoreClear(CoSemaphore &semaphore) { semaphores_.erase(&semaphore); }
+void Schedule::CoSemaphoreClear(CoSemaphore &semaphore) { cosync_.semaphores.erase(&semaphore); }
 
 void Schedule::CoSemaphorePost(CoSemaphore &semaphore) {
   assert(not is_master_);
@@ -28,7 +28,7 @@ void Schedule::CoSemaphoreWait(CoSemaphore &semaphore) {
 int Schedule::CoSemaphoreResume() {
   assert(is_master_);
   int count = 0;
-  for (auto semaphore : semaphores_) {
+  for (auto semaphore : cosync_.semaphores) {
     assert(semaphore->value >= 0);
     if (semaphore->value == 0) continue;
     auto cid_set = semaphore->suspend_cid_set;

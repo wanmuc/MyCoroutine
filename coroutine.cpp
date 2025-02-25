@@ -55,12 +55,12 @@ Schedule::~Schedule() {
   for (int32_t i = 0; i < kMaxBatchSize; i++) {
     delete batchs_[i];
   }
-  assert(mutexs_.size() == 0);
-  assert(conds_.size() == 0);
-  assert(rwlocks_.size() == 0);
-  assert(semaphores_.size() == 0);
-  assert(call_onces_.size() == 0);
-  assert(single_flights_.size() == 0);
+  assert(cosync_.mutexs.size() == 0);
+  assert(cosync_.conds.size() == 0);
+  assert(cosync_.rwlocks.size() == 0);
+  assert(cosync_.semaphores.size() == 0);
+  assert(cosync_.call_onces.size() == 0);
+  assert(cosync_.single_flights.size() == 0);
 }
 
 void Schedule::Run() {

@@ -3,16 +3,16 @@
 namespace MyCoroutine {
 void Schedule::CoCallOnceInit(CoCallOnce& callonce) {
   callonce.state = CallOnceState::kInit;  // CallOnce状态
-  assert(call_onces_.find(&callonce) == call_onces_.end());
-  call_onces_.insert(&callonce);
+  assert(cosync_.call_onces.find(&callonce) == cosync_.call_onces.end());
+  cosync_.call_onces.insert(&callonce);
 }
 
-void Schedule::CoCallOnceClear(CoCallOnce& callonce) { call_onces_.erase(&callonce); }
+void Schedule::CoCallOnceClear(CoCallOnce& callonce) { cosync_.call_onces.erase(&callonce); }
 
 int Schedule::CoCallOnceResume() {
   assert(is_master_);
   int count = 0;
-  for (auto* call_once : call_onces_) {
+  for (auto* call_once : cosync_.call_onces) {
     if (call_once->state != CallOnceState::kFinish) continue;  // 没执行完，不需要唤醒其他从协程
     if (call_once->suspend_cid_set.size() <= 0) continue;      // 是没有挂起的从协程，也不需要唤醒
     auto cid_set = call_once->suspend_cid_set;
