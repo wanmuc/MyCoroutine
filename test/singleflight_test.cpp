@@ -1,4 +1,4 @@
-#include "singleflight.h"
+#include "sync/singleflight.h"
 
 #include <assert.h>
 
