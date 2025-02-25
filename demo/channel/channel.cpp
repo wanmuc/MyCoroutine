@@ -1,4 +1,4 @@
-#include "channel.h"
+#include "sync/channel.h"
 
 #include <iostream>
 

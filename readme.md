@@ -12,13 +12,10 @@
 - test目录：单元测试代码目录，里面有每个特性的测试代码
 - sync目录：同步原语代码目录
 - batch.cpp：批量执行的实现
-- callonce.h、callonce.cpp：协程CallOnce特性的实现
-- channel.h：协程Channel特性的实现
 - common.h：公共结构体、枚举、常量的定义
 - coroutine.cpp：协程核心API的实现
 - localvariable.h、localvariable.cpp：协程本地变量的实现
 - mycoroutine.h：协程库主要接口的声明
-- singleflight.h、singleflight.cpp：协程SingleFlight特性的实现
 
 # 协程调度模型
 
